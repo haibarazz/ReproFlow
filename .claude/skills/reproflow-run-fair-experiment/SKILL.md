@@ -1,15 +1,15 @@
 ---
 name: reproflow-run-fair-experiment
-description: Run or create fair baseline-vs-paper-method comparisons with shared metrics and seeds.
+description: 使用统一指标和随机种子创建或运行 baseline 与论文方法的公平对比实验。
 ---
 
-# ReproFlow Fair Experiment
+# ReproFlow 公平对比实验
 
-Use this skill when comparing baselines, paper methods, tuning results, or ablations.
+当用户需要比较 baseline、论文方法、调参结果或消融实验时，使用这个 skill。
 
-## Manifest
+## 实验 Manifest
 
-Create or edit `configs/experiment/<name>.yaml`:
+创建或修改 `configs/experiment/<name>.yaml`：
 
 ```yaml
 experiment_name: <name>
@@ -30,30 +30,30 @@ methods:
     model: paper_method
 ```
 
-## Run
+## 运行
 
-Dry-run first:
+先 dry-run：
 
 ```bash
 python scripts/experiment/run_experiment.py configs/experiment/<name>.yaml --dry-run --max-runs 2
 ```
 
-Then run:
+再正式运行：
 
 ```bash
 python scripts/experiment/run_experiment.py configs/experiment/<name>.yaml
 ```
 
-Generate aggregate report:
+生成汇总报告：
 
 ```bash
 python scripts/reports/generate_experiment_report.py
 ```
 
-## Fairness Rules
+## 公平性规则
 
-- Use the same dataset config.
-- Use the same metric config.
-- Use the same seed list.
-- Keep `seed_controls_data_split: false` unless intentionally testing split variance.
-- Report mean and std across seeds.
+- 使用同一个 dataset config。
+- 使用同一个 metric config。
+- 使用同一个 seed 列表。
+- 除非实验目标就是研究 split 方差，否则保持 `seed_controls_data_split: false`。
+- 报告 seed mean 和 std。

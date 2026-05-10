@@ -1,33 +1,33 @@
-# Verification
+# 验证
 
-Use this reference before claiming a paper method is ready.
+在声称论文方法可用之前，读取这个 reference。
 
-## Lightweight Checks First
+## 先做轻量检查
 
 ```bash
 python scripts/doctor.py data=<dataset> model=<method_name> trainer=<trainer> metrics=default
 python -m py_compile main.py Data_pre.py Dataset.py engine.py
 ```
 
-If the paper method adds new files, compile them too:
+如果论文方法新增了文件，也编译对应文件：
 
 ```bash
 python -m py_compile models/<method_name>.py
 ```
 
-## Tiny Smoke Run
+## 极小 Smoke Run
 
-Run only when local resources allow it:
+只有本地资源允许时才运行：
 
 ```bash
 python main.py data=<dataset> model=<method_name> trainer=<trainer> metrics=default training_loop.epochs=1
 ```
 
-On a weak local machine, skip full training and state exactly which checks were run.
+如果本地机器资源有限，可以跳过完整训练，但必须说明已经运行了哪些检查。
 
-## If A Core Contract Changed
+## 如果修改了核心契约
 
-Run the matching sample doctor checks:
+运行对应 sample doctor 检查：
 
 ```bash
 python scripts/doctor.py data=sample_binary model=transformer trainer=binary metrics=default training_loop.epochs=1
@@ -35,9 +35,9 @@ python scripts/doctor.py data=sample_multiclass model=transformer trainer=multic
 python scripts/doctor.py data=sample_regression model=transformer trainer=regression metrics=default training_loop.epochs=1
 ```
 
-## Tuning, Ablation, And Comparison
+## 调参、消融和对比实验
 
-Validate orchestration with dry-runs before launching real jobs:
+正式运行前先 dry-run：
 
 ```bash
 python scripts/tuning/run_grid_search.py configs/tuning/<method_name>_grid.yaml --dry-run --max-runs 2
@@ -45,12 +45,12 @@ python scripts/ablation/run_ablation.py configs/ablation/<method_name>_ablation.
 python scripts/experiment/run_experiment.py configs/experiment/<comparison>.yaml --dry-run --max-runs 2
 ```
 
-## Final Handoff
+## 最终交接
 
-Report:
+交接时说明：
 
-- files changed
-- paper method folder
-- model/trainer/data adapter choices
-- validation commands run
-- commands intentionally not run
+- 改了哪些文件
+- 论文方法文件夹位置
+- model / trainer / data adapter 选择
+- 已运行的验证命令
+- 明确没有运行的命令

@@ -1,17 +1,17 @@
-# Reproduction Notes
+# 复现记录
 
-## Paper Mapping
+## 论文映射
 
-- Original paper module:
-- ReproFlow implementation file:
-- Dataset fields used:
-- Output target:
+- 原论文模块：
+- ReproFlow 实现文件：
+- 使用的数据字段：
+- 输出目标：
 
-## Deviations From Paper
+## 与原论文的差异
 
-- None yet.
+- 暂无。
 
-## Validation
+## 验证
 
 ```bash
 python main.py data=<dataset_name> model=<method_name> trainer=<trainer_name> training_loop.epochs=1

@@ -1,8 +1,8 @@
-# ReproFlow Contracts
+# ReproFlow 契约
 
-Use this reference when adding files or checking whether an implementation fits the framework.
+当需要新增文件或确认实现是否符合框架时，读取这个 reference。
 
-## Paper Method Folder
+## 论文方法文件夹
 
 ```text
 paper_methods/<method_name>/
@@ -12,42 +12,42 @@ paper_methods/<method_name>/
 └── reproduction_notes.md
 ```
 
-`method.yaml` should include:
+`method.yaml` 应该包含：
 
-- paper title
-- task type
-- expected inputs
-- target label
-- model config
-- trainer config
-- required baselines
-- validation commands
+- 论文标题
+- 任务类型
+- 期望输入
+- 目标 label
+- 模型配置
+- trainer 配置
+- 需要对比的 baselines
+- 验证命令
 
-## Model Contract
+## 模型契约
 
-Preferred constructor:
+推荐构造函数：
 
 ```python
 def __init__(self, input_dim: int, task_type: str, num_classes: int = 1, ...):
     ...
 ```
 
-Forward contract:
+Forward 契约：
 
 ```python
 def forward(self, batch):
     return {"logits": logits}
 ```
 
-Output shapes:
+输出形状：
 
-- binary classification: `(batch,)` or `(batch, 1)`
-- multiclass classification: `(batch, num_classes)`
-- regression: `(batch,)` or `(batch, 1)`
+- 二分类：`(batch,)` 或 `(batch, 1)`
+- 多分类：`(batch, num_classes)`
+- 回归：`(batch,)` 或 `(batch, 1)`
 
-## Data Contract
+## 数据契约
 
-Default batch keys:
+默认 batch keys：
 
 ```python
 {
@@ -57,7 +57,7 @@ Default batch keys:
 }
 ```
 
-For ordinary CSV/tabular/text-feature tasks, use:
+普通 CSV/tabular/text-feature 任务使用：
 
 ```yaml
 adapter:
@@ -66,11 +66,11 @@ dataset:
   _target_: reproflow.data.tabular.TabularDataset
 ```
 
-For new batch shapes, create a focused adapter/Dataset under `reproflow/data/` or a paper-local `paper_methods/<method_name>/data.py`.
+如果需要新的 batch 形态，在 `reproflow/data/` 中创建聚焦的 adapter/Dataset，或者先放在 `paper_methods/<method_name>/data.py`。
 
-## Config Contract
+## 配置契约
 
-Add user-facing knobs to YAML, not hard-coded Python:
+用户可调参数写进 YAML，不要硬编码到 Python：
 
 ```text
 configs/data/<dataset>.yaml
@@ -81,9 +81,9 @@ configs/ablation/<method_name>_ablation.yaml
 configs/experiment/<comparison>.yaml
 ```
 
-## Trainer Contract
+## Trainer 契约
 
-Use the standard trainer unless the paper requires one of these:
+除非论文需要下面这些变化，否则使用标准 trainer：
 
 - auxiliary loss
 - pairwise/listwise ranking objective
@@ -92,4 +92,4 @@ Use the standard trainer unless the paper requires one of these:
 - graph-specific batch handling
 - multi-task loss aggregation
 
-Custom trainers should live outside `engine.py` when possible, for example in `reproflow/example_trainers.py` or a focused module.
+自定义 trainer 尽量放在 `engine.py` 外部，例如 `reproflow/example_trainers.py` 或其他聚焦模块。

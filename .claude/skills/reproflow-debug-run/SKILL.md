@@ -1,26 +1,26 @@
 ---
 name: reproflow-debug-run
-description: Diagnose failed ReproFlow runs using configs, doctor checks, logs, and generated artifacts.
+description: 使用配置、doctor 检查、日志和生成文件诊断 ReproFlow 运行失败。
 ---
 
-# ReproFlow Debug Run
+# ReproFlow 排查运行错误
 
-Use this skill when a training, tuning, ablation, experiment, or benchmark run fails.
+当训练、调参、消融、实验或 benchmark 运行失败时，使用这个 skill。
 
-## First Checks
+## 优先检查
 
 ```bash
 python scripts/doctor.py data=<dataset> model=<model> trainer=<trainer> metrics=default
 ```
 
-Then inspect:
+然后查看：
 
 - `result/**/training_*.log`
 - `result/**/config_*.yaml`
 - `result/**/history_*.csv`
 - `result/**/summary_latest.csv`
 
-Optional structured artifacts exist only when explicitly enabled:
+以下结构化 artifact 只有显式开启时才会出现：
 
 - `result/tracking/<experiment_id>/<run_id>/run_metadata.json`
 - `result/tracking/<experiment_id>/<run_id>/artifacts_manifest.json`
@@ -28,18 +28,18 @@ Optional structured artifacts exist only when explicitly enabled:
 - `result/tracking/<experiment_id>/<run_id>/metrics_latest.json`
 - `result/tracking/<experiment_id>/<run_id>/predictions.csv`
 
-## Common Failure Modes
+## 常见失败原因
 
-- Dataset config references a missing column.
-- `task_type` does not match trainer.
-- `training_loop.monitor_metric` is not included in the selected metrics.
-- Model forward does not return `{"logits": logits}`.
-- Multiclass logits shape is not `(batch, num_classes)`.
-- Binary/regression logits have an extra incompatible dimension.
+- 数据配置引用了不存在的列。
+- `task_type` 和 trainer 不匹配。
+- `training_loop.monitor_metric` 没有包含在当前 metrics 配置中。
+- 模型 forward 没有返回 `{"logits": logits}`。
+- 多分类 logits 形状不是 `(batch, num_classes)`。
+- 二分类或回归 logits 多了一维不兼容形状。
 
-## Fix Order
+## 修复顺序
 
-1. Fix config mistakes first.
-2. Fix model forward contract second.
-3. Change trainer only if the method objective truly requires it.
-4. Re-run doctor before running a full experiment.
+1. 先修配置错误。
+2. 再修模型 forward 契约。
+3. 只有方法目标真的需要时，才改 trainer。
+4. 跑完整实验前先重新运行 doctor。

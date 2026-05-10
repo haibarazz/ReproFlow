@@ -1,35 +1,35 @@
 ---
 name: reproflow-add-model
-description: Add a new deep learning model or baseline to ReproFlow while preserving model, config, data, and trainer contracts.
+description: 在遵守 ReproFlow 模型、配置、数据和 trainer 契约的前提下，添加新的深度学习模型或 baseline。
 ---
 
-# ReproFlow Add Model
+# ReproFlow 添加模型
 
-Use this skill when adding a baseline, paper method, or architecture variant.
+当用户需要添加 baseline、论文方法或模型结构变体时，使用这个 skill。
 
-## Before Coding
+## 写代码前先看
 
-- For paper reproduction, read `../reproflow-reproduce-paper/references/paper-workflow.md`.
-- For model/data/trainer contracts, read `../reproflow-reproduce-paper/references/contracts.md`.
-- If the model needs a non-standard batch or loss, read `../reproflow-reproduce-paper/references/decision-guide.md`.
+- 如果是论文复现，先读 `../reproflow-reproduce-paper/references/paper-workflow.md`。
+- 如果需要确认模型、数据或 trainer 契约，读 `../reproflow-reproduce-paper/references/contracts.md`。
+- 如果模型需要非标准 batch 或非标准 loss，读 `../reproflow-reproduce-paper/references/decision-guide.md`。
 
-## Required Files
+## 必要文件
 
-- `models/<model_name>.py` or `paper_methods/<method_name>/model.py`
+- `models/<model_name>.py` 或 `paper_methods/<method_name>/model.py`
 - `configs/model/<model_name>.yaml`
-- optional `configs/tuning/<model_name>_grid.yaml`
-- optional `configs/ablation/<model_name>_ablation.yaml`
+- 可选：`configs/tuning/<model_name>_grid.yaml`
+- 可选：`configs/ablation/<model_name>_ablation.yaml`
 
-## Model Constructor
+## 模型构造函数
 
-The model should accept these common arguments when possible:
+尽量让模型支持这些通用参数：
 
 ```python
 def __init__(self, input_dim: int, task_type: str, num_classes: int = 1, ...):
     ...
 ```
 
-## Forward Contract
+## Forward 契约
 
 ```python
 def forward(self, batch):
@@ -37,17 +37,17 @@ def forward(self, batch):
     return {"logits": logits}
 ```
 
-Expected output shape:
+期望输出形状：
 
-- binary classification: `(batch,)` or `(batch, 1)`
-- multiclass classification: `(batch, num_classes)`
-- regression: `(batch,)` or `(batch, 1)`
+- 二分类：`(batch,)` 或 `(batch, 1)`
+- 多分类：`(batch, num_classes)`
+- 回归：`(batch,)` 或 `(batch, 1)`
 
-## Verification
+## 验证
 
 ```bash
 python scripts/doctor.py data=sample_binary model=<model_name> trainer=binary metrics=default
 python main.py data=sample_binary model=<model_name> trainer=binary metrics=default training_loop.epochs=1
 ```
 
-If the model is task-specific, run the matching sample task only.
+如果模型只适配某个任务，只运行对应任务的 sample 检查。

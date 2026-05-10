@@ -1,17 +1,17 @@
-# Example Paper Method Library
+# 示例论文方法库
 
-These 10 folders are example-only scaffolds for beginner users and AI agents.
-They show how a classic paper can map into:
+这里的 10 个文件夹都是示例 scaffold，面向小白用户和 AI agent。
+
+它们展示一篇经典论文如何映射到：
 
 - `paper_methods/examples/<method>/method.yaml`
 - `configs/model/examples/<method>.yaml`
-- optional `configs/trainer/examples/*.yaml`
-- shared example code in `models/paper_example_models.py`
+- 可选的 `configs/trainer/examples/*.yaml`
+- 共享示例代码 `models/paper_example_models.py`
 
-Do not treat these examples as faithful reproductions or reported results. They
-are not meant to be trained on a Mac by default.
+不要把这些示例当作严格论文复现，也不要把它们当作实验结果。默认也不建议在本地 Mac 上完整训练这些示例。
 
-| Example | Paper | Model config | Trainer |
+| 示例 | 论文 | 模型配置 | Trainer |
 | --- | --- | --- | --- |
 | `transformer_encoder_example` | [Attention Is All You Need](https://arxiv.org/abs/1706.03762) | `configs/model/examples/transformer_encoder_example.yaml` | `trainer=binary` |
 | `bert_classifier_example` | [BERT](https://arxiv.org/abs/1810.04805) | `configs/model/examples/bert_classifier_example.yaml` | `trainer=examples/auxiliary_binary` |
@@ -24,11 +24,10 @@ are not meant to be trained on a Mac by default.
 | `din_example` | [Deep Interest Network](https://arxiv.org/abs/1706.06978) | `configs/model/examples/din_example.yaml` | `trainer=examples/auxiliary_binary` |
 | `dlrm_example` | [DLRM](https://arxiv.org/abs/1906.00091) | `configs/model/examples/dlrm_example.yaml` | `trainer=binary` |
 
-Example dry-run style command for an AI agent to inspect the config contract:
+AI 可以用下面命令检查配置契约：
 
 ```bash
 python scripts/doctor.py data=sample_binary model=examples/deepfm_example trainer=binary metrics=default
 ```
 
-Running full training for these examples is intentionally not part of the default
-README flow.
+完整训练这些示例不是默认 README 流程的一部分。

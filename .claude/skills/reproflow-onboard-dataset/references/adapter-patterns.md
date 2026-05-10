@@ -1,10 +1,10 @@
-# Adapter Patterns
+# Adapter 模式
 
-Use this reference when a dataset does not fit the default tabular path.
+当数据集不适合默认 tabular 路径时，读取这个 reference。
 
-## Default Tabular Path
+## 默认 Tabular 路径
 
-Use this when every sample can become one row of features plus one label:
+如果每个样本都能表示成一行 features 加一个 label，就使用：
 
 ```yaml
 adapter:
@@ -13,24 +13,24 @@ dataset:
   _target_: reproflow.data.tabular.TabularDataset
 ```
 
-The default adapter handles:
+默认 adapter 处理：
 
 - numeric columns
 - categorical columns
-- text columns converted to TF-IDF features
+- text columns 转成 TF-IDF features
 - random train/test split
-- label encoding for classification
+- 分类 label encoding
 
-## Recommender Pairwise Path
+## 推荐系统 Pairwise 路径
 
-Use this when a paper needs user/item pairs or negative sampling:
+当论文需要 user/item pairs 或 negative sampling 时，参考：
 
 ```text
 configs/data/examples/recommender_pairwise_example.yaml
 reproflow/data/recommender.py
 ```
 
-Expected batch shape:
+期望 batch 形态：
 
 ```python
 {
@@ -41,18 +41,18 @@ Expected batch shape:
 }
 ```
 
-Implement ID mapping, split strategy, and negative sampling inside the adapter.
+ID 映射、split 策略和 negative sampling 应该在 adapter 里实现。
 
-## Graph Path
+## 图数据路径
 
-Use this when a paper needs node/edge tensors:
+当论文需要 node/edge tensors 时，参考：
 
 ```text
 configs/data/examples/graph_minibatch_example.yaml
 reproflow/data/graph.py
 ```
 
-Expected batch shape:
+期望 batch 形态：
 
 ```python
 {
@@ -62,14 +62,14 @@ Expected batch shape:
 }
 ```
 
-Implement graph construction and batching inside the adapter.
+图构建和 batching 应该在 adapter 里实现。
 
-## Paper-Local Path
+## 论文专用路径
 
-If the preprocessing is specific to one paper, start with:
+如果预处理逻辑只服务于一篇论文，先放在：
 
 ```text
 paper_methods/<method_name>/data.py
 ```
 
-Promote it to `reproflow/data/` only after it becomes reusable.
+只有当它变得可复用时，再提升到 `reproflow/data/`。

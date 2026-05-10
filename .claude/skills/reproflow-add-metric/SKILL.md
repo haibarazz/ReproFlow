@@ -1,33 +1,33 @@
 ---
 name: reproflow-add-metric
-description: Add or configure metrics without modifying the training loop.
+description: 在不修改训练主循环的前提下，为 ReproFlow 添加或配置评估指标。
 ---
 
-# ReproFlow Add Metric
+# ReproFlow 添加指标
 
-Use this skill when adding a new evaluation metric or metric set.
+当用户需要新增评估指标或指标组合时，使用这个 skill。
 
-## Where Metrics Live
+## 指标放在哪里
 
-- Binary and multiclass metrics: `metrics/classification.py`
-- Regression metrics: `metrics/regression.py`
-- Ranking placeholders: `metrics/ranking.py`
-- Registry and defaults: `metrics/registry.py`
-- User-facing config: `configs/metrics/*.yaml`
+- 二分类和多分类指标：`metrics/classification.py`
+- 回归指标：`metrics/regression.py`
+- 排序指标占位：`metrics/ranking.py`
+- 注册表和默认指标：`metrics/registry.py`
+- 用户可选配置：`configs/metrics/*.yaml`
 
-## Rules
+## 规则
 
-- Do not add metric code to `engine.py`.
-- Keep metric functions pure: inputs are scores, labels, and metric names.
-- Return a flat `dict[str, float]`.
-- Add the metric name to `SUPPORTED_METRICS` through the task-specific metric set.
-- Add or update a `configs/metrics/*.yaml` file if users should select the metric.
+- 不要把指标代码写进 `engine.py`。
+- 指标函数保持纯函数：输入是 scores、labels 和 metric names。
+- 返回扁平的 `dict[str, float]`。
+- 通过任务对应的 metric set 把指标名加入 `SUPPORTED_METRICS`。
+- 如果希望用户可以选择该指标，新增或更新 `configs/metrics/*.yaml`。
 
-## Verification
+## 验证
 
 ```bash
 python scripts/doctor.py data=sample_binary model=transformer trainer=binary metrics=default
 python main.py data=sample_binary model=transformer trainer=binary metrics=default training_loop.epochs=1
 ```
 
-For task-specific metrics, also run that task's sample command.
+如果是任务专用指标，也要运行对应任务的 sample 命令。

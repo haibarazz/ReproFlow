@@ -1,28 +1,35 @@
-# ReproFlow Architecture
+# ReproFlow 架构说明
 
-ReproFlow is organized around explicit contracts for data, model, trainer, metric, experiment, and paper methods. The goal is to let an AI agent add new methods incrementally without turning the project into scattered scripts.
+ReproFlow 围绕数据、模型、训练器、指标、实验和论文方法建立明确接口。目标是让 AI 可以按规范增量添加新方法，而不是每复现一篇论文就写一堆零散脚本。
 
-## Agent Layer
+## AI 协作层
 
-`AGENTS.md` is the short universal entrypoint for AI coding agents. Project-local skills live in `.claude/skills/` and document repeatable workflows for dataset onboarding, paper reproduction, model addition, metric addition, fair experiments, and debugging.
+`AGENTS.md` 是给 AI 编程助手看的总入口。项目内置的 workflow skills 放在 `.claude/skills/`，用于描述可重复执行的任务流程：
 
-The skills use progressive disclosure: each `SKILL.md` gives the minimum workflow, and deeper details live in one-level `references/` files that are read only when needed.
+- 接入新数据集
+- 复现论文方法
+- 添加新模型
+- 添加新指标
+- 组织公平对比实验
+- 排查训练和配置错误
 
-## Runtime Flow
+这些 skills 采用渐进式披露：每个 `SKILL.md` 只放最短流程，进一步细节放在同级 `references/` 文件中。AI 只有在需要判断模型、数据适配器、训练器或验证命令时，才读取对应 reference。
+
+## 运行流程
 
 ```text
 configs/data/*.yaml
         |
         v
 Data_pre.py
-  - compatibility entrypoint
-  - delegates to build_data(cfg)
+  - 兼容旧入口
+  - 调用 build_data(cfg)
         |
         v
 reproflow/data/
   - TabularDataAdapter
-  - optional recommender / graph / paper-specific adapters
-  - Dataset classes returning model-ready batches
+  - 可扩展推荐系统 / 图数据 / 论文专用 adapter
+  - Dataset 返回模型可消费的 batch
         |
         v
 models/
@@ -36,8 +43,8 @@ engine.py
         |
         v
 evaluators/ + metrics/
-  - task-aware metric registry
-  - binary / multiclass / regression metrics
+  - 按任务类型选择指标
+  - binary / multiclass / regression 指标
         |
         v
 reproflow/reports.py
@@ -48,24 +55,29 @@ reproflow/reports.py
         |
         v
 reproflow/tracking.py
-  - local experiment_id / run_id metadata
+  - 本地 experiment_id / run_id 元信息
         |
         v
 scripts/tuning/run_grid_search.py / scripts/ablation/run_ablation.py / scripts/experiment/run_experiment.py
-  - grid, candidate, ablation, fair comparison, and multi-seed runs over main.py
+  - 调参、候选配置、消融、公平对比、多 seed 运行
         |
         v
 scripts/reports/generate_experiment_report.py
-  - aggregate benchmark / tuning / ablation / seed summaries
+  - 汇总 baseline / tuning / ablation / seed 结果
 ```
 
-## Extension Points
+## 扩展点
 
-### Dataset
+### 数据集
 
-Add a new dataset by creating `configs/data/<name>.yaml` and placing the CSV under `dataset/`. No Python file should be edited for a normal tabular/text dataset.
+普通 tabular 或 text-feature 数据集只需要新增：
 
-Data preparation is now adapter-driven. The default tabular path is:
+```text
+configs/data/<name>.yaml
+dataset/<name>.csv
+```
+
+不需要修改 Python 文件。默认 tabular 数据路径是：
 
 ```yaml
 adapter:
@@ -74,7 +86,7 @@ dataset:
   _target_: reproflow.data.tabular.TabularDataset
 ```
 
-For a new data shape, add a focused adapter and Dataset under `reproflow/data/`:
+如果论文或模型需要新的 batch 形态，就在 `reproflow/data/` 里新增小而聚焦的 adapter 和 Dataset：
 
 ```text
 reproflow/data/tabular.py
@@ -82,84 +94,134 @@ reproflow/data/recommender.py
 reproflow/data/graph.py
 ```
 
-Use `paper_methods/<paper>/data.py` only for paper-specific data contracts that are not yet reusable. Do not grow `Data_pre.py` or `Dataset.py` with model-specific branches.
+如果某个数据处理逻辑只服务于一篇论文，可以先放在：
 
-Two example-only data configs show the intended extension pattern:
+```text
+paper_methods/<paper>/data.py
+```
+
+只有当它变得通用时，再提升到 `reproflow/data/`。不要继续往 `Data_pre.py` 或 `Dataset.py` 里添加模型专用分支。
+
+两个示例数据配置展示了这种扩展方式：
 
 - `configs/data/examples/recommender_pairwise_example.yaml`
 - `configs/data/examples/graph_minibatch_example.yaml`
 
-### Model
+### 模型
 
-Add a model by implementing a class that accepts `input_dim`, `task_type`, and `num_classes` when needed. The forward method must return `{"logits": logits}`.
+新增模型时，优先让模型类支持这些参数：
 
-### Trainer
+```python
+def __init__(self, input_dim: int, task_type: str, num_classes: int = 1, ...):
+    ...
+```
 
-Use existing trainers for binary classification, multiclass classification, and regression. Add a trainer only when the paper method needs a new loss, auxiliary objective, ranking metric, sequence objective, or graph-specific batch behavior.
+模型的 `forward` 必须返回：
 
-### Metrics And Evaluator
+```python
+{"logits": logits}
+```
 
-Metrics live in `metrics/` and are selected by `configs/metrics/*.yaml`. Trainers should not grow task-specific metric code. The trainer sends scores and labels to `evaluators/Evaluator`, which dispatches to the metric registry.
+### 训练器
 
-Supported V1 metric families:
+二分类、多分类和回归默认使用现有 trainer。只有当论文方法真的改变训练契约时，才新增 trainer，例如：
 
-- binary classification: accuracy, precision, recall, F1, MCC, ROC-AUC, PR-AUC, Brier score
-- multiclass classification: accuracy, balanced accuracy, macro/weighted precision/recall/F1, OVR/OVO AUC
-- regression: MSE, RMSE, MAE, MAPE, median AE, R2, explained variance
-- ranking placeholders: HitRate@K and NDCG@K for future ranking trainers
+- 辅助 loss
+- pairwise/listwise ranking objective
+- contrastive objective
+- sequence generation objective
+- graph-specific batch behavior
+- 多任务 loss 聚合
 
-### Experiment
+新增 trainer 应该放在独立聚焦的模块里，不要继续把 `engine.py` 堆大。
 
-Experiment manifests live in `configs/experiment/*.yaml`. They define a fair comparison group over the same data, metrics, seeds, and output convention. They can run both deep learning methods through `main.py` and traditional ML baselines through `run_ml_benchmark.py`.
+### 指标与评估
 
-### Tuning
+指标放在 `metrics/`，通过 `configs/metrics/*.yaml` 选择。trainer 不应该继续增长任务专用指标代码。trainer 把 scores 和 labels 交给 `evaluators/Evaluator`，再由 metric registry 分发计算。
 
-Deep learning tuning specs live in `configs/tuning/*.yaml`:
+V1 支持的指标族：
 
-- `choices`: Hydra config groups for `data`, `model`, `trainer`, and `training_loop`
-- `base_overrides`: fixed overrides applied to every run
-- `grid`: cartesian product of parameter values
-- `candidates`: optional explicit named override sets when a grid is too large
-- `seeds`: optional first-class random seeds expanded across every candidate
-- `seed_overrides`: config keys that receive each seed, normally `random.seed`
-- `monitor_metric` and `monitor_mode`: summary ranking target
+- 二分类：accuracy、precision、recall、F1、MCC、ROC-AUC、PR-AUC、Brier score
+- 多分类：accuracy、balanced accuracy、macro/weighted precision/recall/F1、OVR/OVO AUC
+- 回归：MSE、RMSE、MAE、MAPE、median AE、R2、explained variance
+- 排序占位：HitRate@K、NDCG@K，后续给 ranking trainer 使用
 
-### Ablation
+### 实验
 
-Ablation specs live in `configs/ablation/*.yaml`. They use named `variants` instead of broad grids. Each variant can be evaluated across the same `seeds` list, and the runner writes both per-run results and mean/std seed aggregates.
+公平对比实验放在：
 
-### Output And Optional Tracking
+```text
+configs/experiment/*.yaml
+```
 
-Default training output is intentionally small:
+一个 experiment manifest 应该把 baseline、论文方法、数据集、指标、seed 和输出约定放在同一个配置里。深度学习方法通过 `main.py` 运行，传统 ML baseline 通过 `run_ml_benchmark.py` 运行。
+
+### 调参
+
+深度学习调参配置放在：
+
+```text
+configs/tuning/*.yaml
+```
+
+常用字段：
+
+- `choices`：Hydra config group，例如 `data`、`model`、`trainer`、`training_loop`
+- `base_overrides`：每次运行都会使用的固定 override
+- `grid`：参数网格
+- `candidates`：显式候选配置，适合网格太大时使用
+- `seeds`：一等公民的随机种子列表
+- `seed_overrides`：seed 写入哪些配置键，通常是 `random.seed`
+- `monitor_metric` / `monitor_mode`：用于排序和选择最优结果
+
+### 消融
+
+消融配置放在：
+
+```text
+configs/ablation/*.yaml
+```
+
+消融使用命名 `variants`，不是宽泛网格。每个 variant 可以在同一组 `seeds` 上运行，runner 会输出单次结果和 seed mean/std 汇总。
+
+### 输出与可选 tracking
+
+默认训练输出保持轻量：
 
 - `training_*.log`
 - `history_*.csv`
 - best checkpoint
 
-Structured tracking is optional. Enable it only when a task needs richer artifacts:
+结构化 tracking 是可选项，只在确实需要更多 artifact 时开启：
 
 ```bash
 python main.py tracking.enabled=true report.enabled=true artifacts.save_manifest=true
 ```
 
-Optional artifacts include report markdown, predictions CSV, events JSONL, metrics JSON, and an artifact manifest.
+可选 artifact 包括 markdown report、predictions CSV、events JSONL、metrics JSON 和 artifact manifest。
 
 ### Doctor
 
-`scripts/doctor.py` is the beginner/AI-agent preflight check. It validates:
+`scripts/doctor.py` 是给小白和 AI 用的预检查工具。它会检查：
 
-- data file and schema columns
-- task type and standard trainer match
-- configured metrics are supported
-- model can be instantiated
-- model forward returns `{"logits": logits}`
-- paper method folders have the required metadata files
+- 数据文件和 schema 列是否存在
+- task type 是否和标准 trainer 匹配
+- 配置指标是否支持
+- 模型能否实例化
+- 模型 forward 是否返回 `{"logits": logits}`
+- paper method 文件夹是否有必要元信息
 
-### Paper Method
+### 论文方法
 
-Each paper method should start from `paper_methods/template/` so the AI agent has a fixed place to document the paper mapping, implementation files, configs, and validation commands.
+每个论文方法都应该从 `paper_methods/template/` 开始，让 AI 有固定位置记录论文映射、实现文件、配置和验证命令。
 
-Use `scripts/paper_methods/scaffold.py` to create the first draft of:
+可以用脚手架命令生成初稿：
+
+```bash
+python scripts/paper_methods/scaffold.py <method_name> --paper docs/papers/<paper>.pdf --dataset <dataset> --trainer <trainer>
+```
+
+脚手架会生成：
 
 - `paper_methods/<method>/method.yaml`
 - `paper_methods/<method>/implementation_checklist.md`
@@ -167,6 +229,6 @@ Use `scripts/paper_methods/scaffold.py` to create the first draft of:
 - `configs/tuning/<method>_grid.yaml`
 - `configs/ablation/<method>_ablation.yaml`
 
-## Design Boundaries
+## 设计边界
 
-ReproFlow is the experiment substrate. It should not become a giant deep learning framework. Heavy systems such as MLflow, Lightning, W&B, distributed training, or automatic PDF agents can be added later only if they serve the reproduction workflow.
+ReproFlow 是实验基座，不是巨型深度学习平台。MLflow、Lightning、W&B、分布式训练、自动 PDF agent 都可以作为后续能力，但只有当它们真正服务于论文复现和公平实验时才应该引入。

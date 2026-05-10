@@ -1,0 +1,22 @@
+# EXAMPLE ONLY: data config shape for recommender papers such as NCF/DLRM variants.
+# It is not runnable until the user provides interaction data and implements sampling.
+name: recommender_pairwise_example
+task_type: binary_classification
+path: dataset/examples/interactions.csv
+user_col: user_id
+item_col: item_id
+label_col: label
+timestamp_col: timestamp
+
+adapter:
+  _target_: reproflow.data.recommender.ImplicitFeedbackAdapter
+dataset:
+  _target_: reproflow.data.recommender.PairwiseRankingDataset
+
+negative_sampling:
+  strategy: uniform
+  negatives_per_positive: 1
+
+split:
+  strategy: leave_one_out
+  random_state: 42

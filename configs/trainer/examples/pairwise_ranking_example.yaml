@@ -1,0 +1,5 @@
+# EXAMPLE ONLY: trainer config showing where ranking/pairwise objectives would plug in.
+# A real ranking reproduction needs a Dataset that yields positive/negative item pairs.
+_target_: reproflow.example_trainers.PairwiseRankingExampleTrainer
+aux_loss_weight: 0.1
+aux_output_key: auxiliary_logits

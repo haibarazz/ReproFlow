@@ -1,0 +1,17 @@
+# EXAMPLE ONLY: scaffold for AI-assisted reproduction, not a completed reproduction.
+method_name: bert_classifier_example
+paper:
+  title: "BERT: Pre-training of Deep Bidirectional Transformers for Language Understanding"
+  arxiv_id: "1810.04805"
+  url: "https://arxiv.org/abs/1810.04805"
+task:
+  default_task_type: binary_classification
+  example_dataset: sample_binary
+implementation:
+  model_py: models/paper_example_models.py
+  model_class: BertClassifierExample
+  model_config: configs/model/examples/bert_classifier_example.yaml
+  trainer_config: configs/trainer/examples/auxiliary_binary.yaml
+notes:
+  - "Example uses CLS pooling and an auxiliary prediction head."
+  - "No pretraining pipeline is included."

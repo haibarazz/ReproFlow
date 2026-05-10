@@ -1,0 +1,10 @@
+# EXAMPLE ONLY: lightweight scaffold inspired by DLRM (arXiv:1906.00091).
+# Demonstrates bottom MLP, feature interactions, and top MLP.
+_target_: models.paper_example_models.DLRMExample
+embed_dim: 32
+num_fields: 16
+bottom_dims: [128, 32]
+top_dims: [128, 64]
+dropout: 0.1
+num_classes: 1
+task_type: binary_classification

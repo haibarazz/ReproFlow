@@ -1,0 +1,5 @@
+# EXAMPLE ONLY: index folder for the bundled classic-paper example library.
+method_name: examples
+description: "Collection of 10 non-runnable-by-default paper method scaffolds for AI agents."
+readme: paper_methods/examples/README.md
+status: example_library

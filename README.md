@@ -15,7 +15,7 @@
 
 </div>
 
-ReproFlow 帮助深度学习初学者和 AI coding agent 把论文方法复现到自己的数据集上，并在统一的数据、指标、随机种子和 baseline 下进行公平对比。
+ReproFlow 帮助深度学习初学者和 AI 助手把论文方法复现到自己的数据集上，并在统一的数据、指标、随机种子和 baseline 下进行公平对比。
 
 <div align="center">
   <a href="./docs/assets/reproflow-architecture-guide.svg"><strong>查看小白友好的项目架构说明</strong></a>
@@ -38,44 +38,24 @@ ReproFlow 提供一个轻量、可配置、适合 AI 接入的实验基座：
 ## 核心能力
 
 - 自定义数据集：通过 `configs/data/*.yaml` 声明数据路径、label、特征列和 split。
+- 数据适配器：通过 `adapter` / `dataset` 配置支持 tabular、推荐系统、图数据等不同 batch 形态。
 - 常见任务：支持二分类、多分类、回归。
-- 指标配置：通过 `configs/metrics/*.yaml` 选择评估指标，不在 trainer 里硬编码。
+- 指标配置：通过 `configs/metrics/*.yaml` 选择评估指标，训练和评估口径保持一致。
 - 传统 ML baseline：保留 `run_ml_benchmark.py`，方便和深度学习方法公平对比。
 - 多随机种子：`configs/tuning/`、`configs/ablation/`、`configs/experiment/` 都支持 `seeds: [...]`。
 - 调参和消融：支持 grid/candidates tuning，也支持一等公民的 ablation runner。
 - AI 复现规范：内置 `AGENTS.md`、`.claude/skills/`、`paper_methods/template/`。
 - 简洁训练输出：默认只输出一个训练 log、一个 history CSV 和 best checkpoint。
 
-## 架构
+## 工作流
 
 ![ReproFlow 架构](docs/assets/reproflow-architecture.svg)
 
 ```text
-Deeplearning-Framework/
-├── main.py                 # Hydra 训练入口
-├── Data_pre.py             # 数据读取、切分、预处理
-├── Dataset.py              # PyTorch Dataset
-├── engine.py               # 二分类 / 多分类 / 回归 trainer
-├── models/                 # 深度学习模型
-├── metrics/                # 指标注册与计算
-├── ml_benchmark/           # 传统 ML baseline
-├── configs/
-│   ├── data/               # 数据 schema
-│   ├── model/              # 模型参数
-│   ├── trainer/            # trainer 选择
-│   ├── metrics/            # 指标组合
-│   ├── experiment/         # 公平对比实验
-│   ├── tuning/             # 调参
-│   └── ablation/           # 消融实验
-├── docs/
-│   ├── papers/             # 论文 PDF / Markdown
-│   ├── architecture.md
-│   └── ai_reproduction_guide.md
-├── paper_methods/template/ # 论文方法模板
-├── .claude/skills/         # 项目内置 AI skills
-├── AGENTS.md               # AI agent 总入口
-└── scripts/                # doctor / tuning / ablation / experiment / report 工具
+放入数据和论文 -> 选择或新增模型 -> 统一训练 -> baseline 对比 -> 多 seed / 消融 -> 汇总结果
 ```
+
+更完整的项目结构和扩展规范见 [docs/architecture.md](./docs/architecture.md)。
 
 ## 快速开始
 
@@ -147,6 +127,11 @@ split:
 preprocess:
   scale_numeric: true
   encode_categorical: true
+
+adapter:
+  _target_: reproflow.data.tabular.TabularDataAdapter
+dataset:
+  _target_: reproflow.data.tabular.TabularDataset
 ```
 
 训练前先检查：
@@ -172,18 +157,47 @@ python scripts/paper_methods/scaffold.py paper_xxx \
   --trainer binary
 ```
 
-AI 实现时应遵守：
+论文方法接入规范：
 
 - `AGENTS.md`
 - `docs/ai_reproduction_guide.md`
 - `.claude/skills/reproflow-reproduce-paper/SKILL.md`
 - `paper_methods/template/`
 
-模型 forward contract 固定为：
+模型接入的详细接口放在 [docs/ai_reproduction_guide.md](./docs/ai_reproduction_guide.md)。
 
-```python
-def forward(self, batch):
-    return {"logits": logits}
+给 AI 的推荐提示词：
+
+```text
+请使用 .claude/skills/reproflow-reproduce-paper/SKILL.md，
+把 docs/papers/<paper>.pdf 复现成 ReproFlow 方法。
+
+目标数据：configs/data/<dataset>.yaml
+任务类型：binary / multiclass / regression
+限制：先不要跑完整训练，只跑 doctor 和必要的 1 epoch smoke check。
+要求：不要写独立训练脚本，模型、数据、trainer、metric 都接入 ReproFlow 配置体系。
+```
+
+## 经典论文示例
+
+项目内置了 10 个经典 arXiv 论文的示例级模型 scaffold，覆盖 Transformer、BERT、ResNet、Wide & Deep、NCF、DeepFM、DCN、AutoInt、DIN 和 DLRM。论文清单见 [docs/papers/classic_arxiv_examples.md](./docs/papers/classic_arxiv_examples.md)。
+
+这些示例位于：
+
+```text
+paper_methods/examples/
+configs/model/examples/
+configs/trainer/examples/
+models/paper_example_models.py
+```
+
+它们用于展示“小白 + AI”如何把论文方法拆成 model、model yaml 和必要的 trainer yaml。所有示例都标注为 `EXAMPLE ONLY`，默认不建议在本地 Mac 上直接完整训练。
+
+项目也提供了两个数据形态示例，方便 AI 理解什么时候需要新增 adapter 和 dataset：
+
+```text
+configs/data/examples/recommender_pairwise_example.yaml
+configs/data/examples/graph_minibatch_example.yaml
 ```
 
 ## 传统 ML Baseline
@@ -244,9 +258,9 @@ python scripts/experiment/run_experiment.py configs/experiment/binary_smoke.yaml
 
 它可以把深度学习方法和传统 ML baseline 放在同一组实验里，并统一 dataset、metric、seed 和输出目录。
 
-## AI Skills
+## AI 协作流程
 
-项目内置了给 AI agent 使用的工作流：
+项目内置了面向 AI 协作的 skills。它们相当于给 AI 的项目内操作手册，让 AI 按固定流程接入数据、复现论文、添加模型、补指标、跑公平对比和排查错误。
 
 ```text
 .claude/skills/
@@ -258,12 +272,20 @@ python scripts/experiment/run_experiment.py configs/experiment/binary_smoke.yaml
 └── reproflow-debug-run
 ```
 
-这些 skills 会引导 AI 按项目 contract 增量接入数据、模型、指标、消融和实验。
+最常用的入口是：
 
-## 验证命令
+- `reproflow-reproduce-paper`：把 `docs/papers/` 里的论文复现成可配置方法。
+- `reproflow-onboard-dataset`：把自己的数据集接入 `configs/data/`。
+- `reproflow-run-fair-experiment`：把 baseline、论文方法、多 seed 和消融放进同一个对比实验。
+- `reproflow-debug-run`：训练或配置出错时，先跑 doctor，再看日志和 history CSV。
+
+skills 采用渐进式组织：主 `SKILL.md` 只放最短流程，细节放在 `references/` 里。AI 只有在需要判断 model、data adapter、trainer、metric 或验证命令时才读取对应材料。
+
+10 个经典论文示例可以作为新增模型时的参考。推荐系统和图数据的 adapter 示例可以作为新增数据形态时的参考。
+
+## 快速自检
 
 ```bash
-python -m py_compile main.py Data_pre.py Dataset.py engine.py run_ml_benchmark.py
 python scripts/doctor.py data=sample_binary model=transformer trainer=binary metrics=default training_loop.epochs=1
 python main.py data=sample_binary model=transformer trainer=binary metrics=default training_loop.epochs=1
 ```

@@ -1,0 +1,8 @@
+# EXAMPLE ONLY: lightweight scaffold inspired by ResNet (arXiv:1512.03385).
+# Adapts residual connections to a tabular MLP input.
+_target_: models.paper_example_models.ResNetMLPExample
+hidden_dim: 128
+num_blocks: 3
+dropout: 0.1
+num_classes: 1
+task_type: binary_classification

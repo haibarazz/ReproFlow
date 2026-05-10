@@ -1,0 +1,17 @@
+# EXAMPLE ONLY: scaffold for AI-assisted reproduction, not a completed reproduction.
+method_name: dlrm_example
+paper:
+  title: "Deep Learning Recommendation Model for Personalization and Recommendation Systems"
+  arxiv_id: "1906.00091"
+  url: "https://arxiv.org/abs/1906.00091"
+task:
+  default_task_type: binary_classification
+  example_dataset: sample_binary
+implementation:
+  model_py: models/paper_example_models.py
+  model_class: DLRMExample
+  model_config: configs/model/examples/dlrm_example.yaml
+  trainer_config: configs/trainer/binary.yaml
+notes:
+  - "Example shows bottom MLP, feature interactions, and top MLP."
+  - "A real DLRM reproduction needs categorical embedding-table specs."

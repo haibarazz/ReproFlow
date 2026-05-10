@@ -1,10 +1,12 @@
 # ReproFlow Architecture
 
-ReproFlow keeps the original project style: `main.py`, `Data_pre.py`, `Dataset.py`, `engine.py`, `models/`, and `configs/` remain the core architecture. The upgrade is that data, task, trainer, and paper-method extension points are now explicit contracts instead of hidden assumptions.
+ReproFlow is organized around explicit contracts for data, model, trainer, metric, experiment, and paper methods. The goal is to let an AI agent add new methods incrementally without turning the project into scattered scripts.
 
 ## Agent Layer
 
 `AGENTS.md` is the short universal entrypoint for AI coding agents. Project-local skills live in `.claude/skills/` and document repeatable workflows for dataset onboarding, paper reproduction, model addition, metric addition, fair experiments, and debugging.
+
+The skills use progressive disclosure: each `SKILL.md` gives the minimum workflow, and deeper details live in one-level `references/` files that are read only when needed.
 
 ## Runtime Flow
 
@@ -13,20 +15,14 @@ configs/data/*.yaml
         |
         v
 Data_pre.py
-  - read CSV
-  - validate columns
-  - split train/test
-  - encode labels
-  - scale numeric features
-  - encode categorical features
-  - optionally build TF-IDF text features
+  - compatibility entrypoint
+  - delegates to build_data(cfg)
         |
         v
-Dataset.py
-  - returns batch dict
-  - basic_features
-  - label
-  - optional sample_id
+reproflow/data/
+  - TabularDataAdapter
+  - optional recommender / graph / paper-specific adapters
+  - Dataset classes returning model-ready batches
         |
         v
 models/
@@ -68,6 +64,30 @@ scripts/reports/generate_experiment_report.py
 ### Dataset
 
 Add a new dataset by creating `configs/data/<name>.yaml` and placing the CSV under `dataset/`. No Python file should be edited for a normal tabular/text dataset.
+
+Data preparation is now adapter-driven. The default tabular path is:
+
+```yaml
+adapter:
+  _target_: reproflow.data.tabular.TabularDataAdapter
+dataset:
+  _target_: reproflow.data.tabular.TabularDataset
+```
+
+For a new data shape, add a focused adapter and Dataset under `reproflow/data/`:
+
+```text
+reproflow/data/tabular.py
+reproflow/data/recommender.py
+reproflow/data/graph.py
+```
+
+Use `paper_methods/<paper>/data.py` only for paper-specific data contracts that are not yet reusable. Do not grow `Data_pre.py` or `Dataset.py` with model-specific branches.
+
+Two example-only data configs show the intended extension pattern:
+
+- `configs/data/examples/recommender_pairwise_example.yaml`
+- `configs/data/examples/graph_minibatch_example.yaml`
 
 ### Model
 

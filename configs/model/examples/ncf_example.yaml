@@ -1,0 +1,8 @@
+# EXAMPLE ONLY: lightweight scaffold inspired by Neural Collaborative Filtering (arXiv:1708.05031).
+# Real recommender use should map user/item IDs through the dataset adapter.
+_target_: models.paper_example_models.NCFExample
+embed_dim: 64
+hidden_dims: [128, 64]
+dropout: 0.1
+num_classes: 1
+task_type: binary_classification

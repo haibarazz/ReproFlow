@@ -1,0 +1,10 @@
+# EXAMPLE ONLY: lightweight scaffold inspired by "Attention Is All You Need" (arXiv:1706.03762).
+# Do not treat this file as a faithful paper reproduction or a validated benchmark.
+_target_: models.paper_example_models.TransformerEncoderExample
+embed_dim: 64
+num_fields: 16
+num_layers: 2
+num_heads: 4
+dropout: 0.1
+num_classes: 1
+task_type: binary_classification

@@ -2,7 +2,7 @@
   <rect width="960" height="360" rx="18" fill="#FFFFFF"/>
   <rect x="1" y="1" width="958" height="358" rx="17" stroke="#E5E7EB"/>
   <text x="40" y="48" font-family="Arial, Helvetica, sans-serif" font-size="24" font-weight="700" fill="#111827">ReproFlow 架构</text>
-  <text x="40" y="78" font-family="Arial, Helvetica, sans-serif" font-size="14" fill="#4B5563">保留原来的 main.py / Data_pre.py / Dataset.py / engine.py 骨架，在外层补配置、指标、对比和 AI 规范。</text>
+  <text x="40" y="78" font-family="Arial, Helvetica, sans-serif" font-size="14" fill="#4B5563">从数据和论文出发，把模型复现、baseline 对比、调参、消融和报告汇总放进同一套实验流程。</text>
   <g font-family="Arial, Helvetica, sans-serif" font-size="14">
     <rect x="54" y="120" width="180" height="170" rx="12" fill="#F9FAFB" stroke="#D1D5DB"/>
     <text x="92" y="150" font-size="17" font-weight="700" fill="#111827">配置层</text>
@@ -11,11 +11,11 @@
     <text x="78" y="240" fill="#374151">configs/metrics</text>
     <text x="78" y="268" fill="#374151">configs/experiment</text>
     <rect x="290" y="120" width="180" height="170" rx="12" fill="#F9FAFB" stroke="#D1D5DB"/>
-    <text x="330" y="150" font-size="17" font-weight="700" fill="#111827">训练骨架</text>
-    <text x="318" y="184" fill="#374151">Data_pre.py</text>
-    <text x="318" y="212" fill="#374151">Dataset.py</text>
-    <text x="318" y="240" fill="#374151">models/</text>
-    <text x="318" y="268" fill="#374151">engine.py</text>
+    <text x="330" y="150" font-size="17" font-weight="700" fill="#111827">模型复现</text>
+    <text x="318" y="184" fill="#374151">paper method</text>
+    <text x="318" y="212" fill="#374151">model config</text>
+    <text x="318" y="240" fill="#374151">trainer config</text>
+    <text x="318" y="268" fill="#374151">smoke check</text>
     <rect x="526" y="120" width="180" height="170" rx="12" fill="#F9FAFB" stroke="#D1D5DB"/>
     <text x="568" y="150" font-size="17" font-weight="700" fill="#111827">评估对比</text>
     <text x="552" y="184" fill="#374151">metrics/</text>
@@ -23,11 +23,11 @@
     <text x="552" y="240" fill="#374151">tuning</text>
     <text x="552" y="268" fill="#374151">ablation</text>
     <rect x="762" y="120" width="145" height="170" rx="12" fill="#F9FAFB" stroke="#D1D5DB"/>
-    <text x="800" y="150" font-size="17" font-weight="700" fill="#111827">AI 层</text>
-    <text x="786" y="184" fill="#374151">AGENTS.md</text>
-    <text x="786" y="212" fill="#374151">.claude/skills</text>
-    <text x="786" y="240" fill="#374151">paper_methods</text>
-    <text x="786" y="268" fill="#374151">docs/papers</text>
+    <text x="800" y="150" font-size="17" font-weight="700" fill="#111827">论文库</text>
+    <text x="786" y="184" fill="#374151">docs/papers</text>
+    <text x="786" y="212" fill="#374151">10 examples</text>
+    <text x="786" y="240" fill="#374151">AI workflow</text>
+    <text x="786" y="268" fill="#374151">report</text>
   </g>
   <path d="M244 205H280" stroke="#9CA3AF" stroke-width="2"/>
   <path d="M274 198L282 205L274 212" stroke="#9CA3AF" stroke-width="2" fill="none"/>

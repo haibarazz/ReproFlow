@@ -13,18 +13,8 @@ from sklearn.preprocessing import LabelEncoder, StandardScaler
 from torch.utils.data import DataLoader
 
 from Dataset import BaseDataset
-
-
-TASK_ALIASES = {
-    "classification": "binary_classification",
-    "binary": "binary_classification",
-    "binary_classification": "binary_classification",
-    "multiclass": "multiclass_classification",
-    "Multiclass": "multiclass_classification",
-    "multi_class": "multiclass_classification",
-    "multiclass_classification": "multiclass_classification",
-    "regression": "regression",
-}
+from reproflow.data.registry import build_data_bundle
+from reproflow.data.schemas import TASK_ALIASES
 
 
 @dataclass
@@ -307,3 +297,14 @@ def prepare_data(df: pd.DataFrame, cfg: DictConfig):
     print(f"Prepared data: train={len(train_dataset)}, test={len(test_dataset)}, features={len(feature_cols)}")
     print(f"Task: {task_type}, label={label_col}, num_classes={num_classes}")
     return train_loader, test_loader, len(feature_cols), data_meta
+
+
+def build_data(cfg: DictConfig):
+    """Build data through the configured ReproFlow data adapter.
+
+    This is the new public data entrypoint. The older load_and_preprocess_data()
+    and prepare_data() functions remain for compatibility with existing scripts.
+    """
+
+    bundle = build_data_bundle(cfg)
+    return bundle.train_loader, bundle.test_loader, bundle.input_dim, bundle.meta

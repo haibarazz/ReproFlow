@@ -1,0 +1,17 @@
+# EXAMPLE ONLY: scaffold for AI-assisted reproduction, not a completed reproduction.
+method_name: dcn_example
+paper:
+  title: "Deep & Cross Network for Ad Click Predictions"
+  arxiv_id: "1708.05123"
+  url: "https://arxiv.org/abs/1708.05123"
+task:
+  default_task_type: binary_classification
+  example_dataset: sample_binary
+implementation:
+  model_py: models/paper_example_models.py
+  model_class: DCNExample
+  model_config: configs/model/examples/dcn_example.yaml
+  trainer_config: configs/trainer/binary.yaml
+notes:
+  - "Example shows explicit cross layers plus a deep branch."
+  - "No ad-click dataset assumptions are hard-coded."

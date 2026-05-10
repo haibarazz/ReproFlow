@@ -1,0 +1,17 @@
+# EXAMPLE ONLY: scaffold for AI-assisted reproduction, not a completed reproduction.
+method_name: transformer_encoder_example
+paper:
+  title: "Attention Is All You Need"
+  arxiv_id: "1706.03762"
+  url: "https://arxiv.org/abs/1706.03762"
+task:
+  default_task_type: binary_classification
+  example_dataset: sample_binary
+implementation:
+  model_py: models/paper_example_models.py
+  model_class: TransformerEncoderExample
+  model_config: configs/model/examples/transformer_encoder_example.yaml
+  trainer_config: configs/trainer/binary.yaml
+notes:
+  - "Example maps self-attention to generic feature tokens."
+  - "No training result is claimed."

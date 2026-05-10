@@ -1,0 +1,10 @@
+# EXAMPLE ONLY: lightweight scaffold inspired by AutoInt (arXiv:1810.11921).
+# Demonstrates self-attention over feature fields.
+_target_: models.paper_example_models.AutoIntExample
+embed_dim: 32
+num_fields: 16
+num_layers: 2
+num_heads: 4
+dropout: 0.1
+num_classes: 1
+task_type: binary_classification

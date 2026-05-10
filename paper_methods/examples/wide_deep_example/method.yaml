@@ -1,0 +1,17 @@
+# EXAMPLE ONLY: scaffold for AI-assisted reproduction, not a completed reproduction.
+method_name: wide_deep_example
+paper:
+  title: "Wide & Deep Learning for Recommender Systems"
+  arxiv_id: "1606.07792"
+  url: "https://arxiv.org/abs/1606.07792"
+task:
+  default_task_type: binary_classification
+  example_dataset: sample_binary
+implementation:
+  model_py: models/paper_example_models.py
+  model_class: WideDeepExample
+  model_config: configs/model/examples/wide_deep_example.yaml
+  trainer_config: configs/trainer/binary.yaml
+notes:
+  - "Example combines a linear wide branch with an MLP branch."
+  - "Feature crossing should be dataset-specific in a real reproduction."

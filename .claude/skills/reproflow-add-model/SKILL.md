@@ -1,11 +1,17 @@
 ---
 name: reproflow-add-model
-description: Add a new deep learning model while preserving ReproFlow model and config contracts.
+description: Add a new deep learning model or baseline to ReproFlow while preserving model, config, data, and trainer contracts.
 ---
 
 # ReproFlow Add Model
 
 Use this skill when adding a baseline, paper method, or architecture variant.
+
+## Before Coding
+
+- For paper reproduction, read `../reproflow-reproduce-paper/references/paper-workflow.md`.
+- For model/data/trainer contracts, read `../reproflow-reproduce-paper/references/contracts.md`.
+- If the model needs a non-standard batch or loss, read `../reproflow-reproduce-paper/references/decision-guide.md`.
 
 ## Required Files
 

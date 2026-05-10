@@ -1,4 +1,8 @@
 name: sample_regression
+adapter:
+  _target_: reproflow.data.tabular.TabularDataAdapter
+dataset:
+  _target_: reproflow.data.tabular.TabularDataset
 path: dataset/sample_regression.csv
 task_type: regression
 id_col: sample_id

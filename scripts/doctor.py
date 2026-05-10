@@ -14,7 +14,7 @@ ROOT = Path(__file__).resolve().parents[1]
 if str(ROOT) not in sys.path:
     sys.path.insert(0, str(ROOT))
 
-from Data_pre import get_data_config, load_and_preprocess_data, normalize_task_type, prepare_data
+from Data_pre import build_data, get_data_config, normalize_task_type
 from main import create_model
 from metrics import get_metric_names, validate_metrics
 
@@ -95,8 +95,7 @@ def _check_metrics(cfg: Any, errors: list[str], warnings: list[str]) -> None:
 
 def _check_model_forward(cfg: Any, errors: list[str], warnings: list[str]) -> None:
     try:
-        frame = load_and_preprocess_data(cfg)
-        train_loader, _, input_dim, data_meta = prepare_data(frame, cfg)
+        train_loader, _, input_dim, data_meta = build_data(cfg)
         model = create_model(cfg, input_dim=input_dim, data_meta=data_meta)
         model.eval()
         batch = next(iter(train_loader))

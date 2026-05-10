@@ -1,0 +1,11 @@
+# EXAMPLE ONLY: lightweight scaffold inspired by BERT (arXiv:1810.04805).
+# Uses a CLS-style encoder and an example auxiliary head.
+_target_: models.paper_example_models.BertClassifierExample
+embed_dim: 64
+num_fields: 16
+num_layers: 2
+num_heads: 4
+dropout: 0.1
+use_auxiliary_head: true
+num_classes: 1
+task_type: binary_classification

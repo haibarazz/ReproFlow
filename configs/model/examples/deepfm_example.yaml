@@ -1,0 +1,9 @@
+# EXAMPLE ONLY: lightweight scaffold inspired by DeepFM (arXiv:1703.04247).
+# Demonstrates wide, FM interaction, and deep branches over generic feature tokens.
+_target_: models.paper_example_models.DeepFMExample
+embed_dim: 32
+num_fields: 16
+hidden_dims: [128, 64]
+dropout: 0.1
+num_classes: 1
+task_type: binary_classification

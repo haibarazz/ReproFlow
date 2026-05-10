@@ -1,0 +1,17 @@
+# EXAMPLE ONLY: scaffold for AI-assisted reproduction, not a completed reproduction.
+method_name: ncf_example
+paper:
+  title: "Neural Collaborative Filtering"
+  arxiv_id: "1708.05031"
+  url: "https://arxiv.org/abs/1708.05031"
+task:
+  default_task_type: binary_classification
+  example_dataset: sample_binary
+implementation:
+  model_py: models/paper_example_models.py
+  model_class: NCFExample
+  model_config: configs/model/examples/ncf_example.yaml
+  trainer_config: configs/trainer/examples/pairwise_ranking_example.yaml
+notes:
+  - "Example splits generic features into user/item sides."
+  - "A real recommender dataset should provide user_id, item_id, and sampled negatives."

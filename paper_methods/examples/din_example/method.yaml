@@ -1,0 +1,17 @@
+# EXAMPLE ONLY: scaffold for AI-assisted reproduction, not a completed reproduction.
+method_name: din_example
+paper:
+  title: "Deep Interest Network for Click-Through Rate Prediction"
+  arxiv_id: "1706.06978"
+  url: "https://arxiv.org/abs/1706.06978"
+task:
+  default_task_type: binary_classification
+  example_dataset: sample_binary
+implementation:
+  model_py: models/paper_example_models.py
+  model_class: DINExample
+  model_config: configs/model/examples/din_example.yaml
+  trainer_config: configs/trainer/examples/auxiliary_binary.yaml
+notes:
+  - "Example shows target-aware attention and an auxiliary interest head."
+  - "A real DIN reproduction should provide behavior sequence fields."

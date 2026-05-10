@@ -2,6 +2,16 @@
 
 This guide is the contract an AI coding agent must follow when reproducing a paper inside ReproFlow.
 
+## Recommended Skill Entry
+
+If the agent can read project-local skills, start with:
+
+```text
+.claude/skills/reproflow-reproduce-paper/SKILL.md
+```
+
+That skill gives the shortest workflow first and points to focused `references/` files only when the agent needs contracts, adapter/trainer decisions, or verification commands. Use this guide as the deeper project contract after the skill has identified the relevant path.
+
 ## Required Inputs
 
 1. Target paper file under `docs/papers/`.
@@ -14,12 +24,14 @@ This guide is the contract an AI coding agent must follow when reproducing a pap
 - Do not write standalone training scripts for a paper method.
 - Do not hard-code feature columns, label names, or file paths in Python.
 - Use `configs/data/*.yaml` for data schema.
+- Use `data.adapter` and `data.dataset` when the method needs a custom data shape.
 - Use `configs/model/*.yaml` for model hyperparameters and `_target_`.
 - Use `configs/metrics/*.yaml` for metrics. Do not add metric code to `engine.py`.
 - Use `configs/trainer/*.yaml` only when the existing trainer is not enough.
 - Keep the model forward contract: `forward(batch) -> {"logits": logits}`.
 - Keep the standard batch keys unless the method truly needs a new dataset class.
 - If a new batch key is required, document it in the paper method README and update the dataset code carefully.
+- Do not add model-specific branches to `Data_pre.py` or `Dataset.py`. Add a focused adapter/Dataset under `reproflow/data/` or a paper-local `paper_methods/<method>/data.py`.
 
 ## Paper Method Folder
 
@@ -135,6 +147,39 @@ python scripts/paper_methods/scaffold.py <method_name> --paper docs/papers/<pape
 ```
 
 The scaffold creates `method.yaml`, an implementation checklist, a model config, a tuning spec, and an ablation spec. The generated model config is a placeholder until the AI agent implements the matching model class.
+
+## Example Paper Library
+
+ReproFlow includes 10 example-only classic paper scaffolds under:
+
+```text
+paper_methods/examples/
+configs/model/examples/
+configs/trainer/examples/
+models/paper_example_models.py
+```
+
+Use these examples as patterns before adding a new paper method:
+
+- Transformer encoder example
+- BERT classifier example with an auxiliary head
+- ResNet-style MLP example
+- Wide & Deep example
+- Neural Collaborative Filtering example
+- DeepFM example
+- Deep & Cross Network example
+- AutoInt example
+- Deep Interest Network example with an auxiliary head
+- DLRM example
+
+These files are marked `EXAMPLE ONLY`. They show file layout, model YAML, and optional trainer YAML. They are not faithful reproductions and should not be reported as experimental results.
+
+For data contracts beyond plain tabular CSV, inspect:
+
+- `configs/data/examples/recommender_pairwise_example.yaml`
+- `configs/data/examples/graph_minibatch_example.yaml`
+- `reproflow/data/recommender.py`
+- `reproflow/data/graph.py`
 
 ## Output Requirement
 

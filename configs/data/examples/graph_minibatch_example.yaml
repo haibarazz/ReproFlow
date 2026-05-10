@@ -1,0 +1,25 @@
+# EXAMPLE ONLY: data config shape for graph papers.
+# It is not runnable until node/edge files and graph construction are implemented.
+name: graph_minibatch_example
+task_type: binary_classification
+node_path: dataset/examples/nodes.csv
+edge_path: dataset/examples/edges.csv
+label_path: dataset/examples/graph_labels.csv
+label_col: label
+
+adapter:
+  _target_: reproflow.data.graph.GraphDataAdapter
+dataset:
+  _target_: reproflow.data.graph.GraphMiniBatchDataset
+
+graph:
+  node_id_col: node_id
+  source_col: source
+  target_col: target
+  edge_type_col: edge_type
+  node_feature_cols: []
+
+split:
+  strategy: random
+  train_ratio: 0.8
+  random_state: 42

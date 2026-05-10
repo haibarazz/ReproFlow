@@ -1,0 +1,17 @@
+# EXAMPLE ONLY: scaffold for AI-assisted reproduction, not a completed reproduction.
+method_name: resnet_mlp_example
+paper:
+  title: "Deep Residual Learning for Image Recognition"
+  arxiv_id: "1512.03385"
+  url: "https://arxiv.org/abs/1512.03385"
+task:
+  default_task_type: binary_classification
+  example_dataset: sample_binary
+implementation:
+  model_py: models/paper_example_models.py
+  model_class: ResNetMLPExample
+  model_config: configs/model/examples/resnet_mlp_example.yaml
+  trainer_config: configs/trainer/binary.yaml
+notes:
+  - "Example adapts residual blocks to tabular features."
+  - "No image pipeline is included."

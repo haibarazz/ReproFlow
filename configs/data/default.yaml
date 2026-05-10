@@ -1,4 +1,8 @@
 name: sample_binary
+adapter:
+  _target_: reproflow.data.tabular.TabularDataAdapter
+dataset:
+  _target_: reproflow.data.tabular.TabularDataset
 path: dataset/sample_binary.csv
 task_type: binary_classification
 id_col: sample_id

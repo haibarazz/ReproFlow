@@ -125,11 +125,11 @@
     <rect x="805" y="760" width="325" height="330" rx="22" fill="#FFFFFF" stroke="#D1D5DB"/>
     <rect x="805" y="760" width="325" height="68" rx="22" fill="#FFF7ED"/>
     <text x="833" y="804" class="card-title">框架帮你管</text>
-    <text x="833" y="866" class="label">Data_pre.py</text>
+    <text x="833" y="866" class="label">数据处理</text>
     <text x="960" y="866" class="body">读取和切分</text>
-    <text x="833" y="914" class="label">Dataset.py</text>
+    <text x="833" y="914" class="label">批次构造</text>
     <text x="948" y="914" class="body">统一 batch</text>
-    <text x="833" y="962" class="label">engine.py</text>
+    <text x="833" y="962" class="label">训练循环</text>
     <text x="930" y="962" class="body">训练和 checkpoint</text>
     <text x="833" y="1010" class="label">metrics/</text>
     <text x="930" y="1010" class="body">统一指标计算</text>

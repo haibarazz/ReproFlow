@@ -1,14 +1,15 @@
 # ReproFlow Agent Guide
 
-This repository is an AI-native reproducible ML experiment framework. Agents should preserve the existing lightweight architecture and add new paper methods through the configured contracts instead of writing standalone scripts.
+This repository is an AI-native reproducible ML experiment framework. Agents should add new paper methods through configured contracts instead of writing standalone scripts.
 
 ## Core Architecture
 
-Keep these root files as the stable runtime spine:
+Runtime spine:
 
 - `main.py`: Hydra entrypoint for deep learning runs
-- `Data_pre.py`: config-driven data loading, splitting, and preprocessing
-- `Dataset.py`: PyTorch dataset contract
+- `Data_pre.py`: compatibility entrypoint that delegates to the configured data adapter
+- `Dataset.py`: compatibility alias for the default tabular Dataset
+- `reproflow/data/`: data adapters and Dataset contracts for tabular, recommender, graph, and future data shapes
 - `engine.py`: trainer loop for binary, multiclass, and regression tasks
 - `run_ml_benchmark.py`: traditional ML baseline entrypoint
 
@@ -19,8 +20,9 @@ Do not replace this project with Lightning, MLflow, W&B, or another framework un
 Before adding or modifying a model:
 
 1. Read `docs/architecture.md`.
-2. Read `docs/ai_reproduction_guide.md`.
-3. Run the relevant preflight check:
+2. If the task is paper reproduction, start from `.claude/skills/reproflow-reproduce-paper/SKILL.md`.
+3. Read only the referenced skill files needed for the current step.
+4. Run the relevant preflight check:
 
 ```bash
 python scripts/doctor.py data=<dataset> model=<model> trainer=<trainer> metrics=default
@@ -32,6 +34,8 @@ python scripts/doctor.py data=<dataset> model=<model> trainer=<trainer> metrics=
 - Metrics belong in `configs/metrics/*.yaml` and `metrics/`.
 - Model hyperparameters belong in `configs/model/*.yaml`.
 - Standard task trainers live in `configs/trainer/*.yaml` and `engine.py`.
+- New non-standard trainers should live in focused modules instead of expanding `engine.py`.
+- New data shapes should use `data.adapter` and `data.dataset` instead of expanding `Data_pre.py` or `Dataset.py`.
 - Fair comparison groups belong in `configs/experiment/*.yaml`.
 - Tuning belongs in `configs/tuning/*.yaml`.
 - Ablation belongs in `configs/ablation/*.yaml`.

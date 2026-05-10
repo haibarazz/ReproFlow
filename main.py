@@ -8,7 +8,7 @@ import hydra
 import torch
 from omegaconf import DictConfig
 
-from Data_pre import load_and_preprocess_data, prepare_data
+from Data_pre import build_data
 from reproflow.seed_utils import set_global_seed
 from reproflow.tracking import create_run_context, write_run_metadata
 
@@ -70,8 +70,7 @@ def main(cfg: DictConfig):
     print("Starting ReproFlow experiment...")
     seed = set_global_seed(cfg.get("random", {}))
     print(f"Random seed: {seed}")
-    df = load_and_preprocess_data(cfg)
-    train_loader, test_loader, input_dim, data_meta = prepare_data(df, cfg)
+    train_loader, test_loader, input_dim, data_meta = build_data(cfg)
     data_meta["seed"] = seed
     run_context = create_run_context(cfg, run_type="train")
     write_run_metadata(run_context, cfg, data_meta, status="started")

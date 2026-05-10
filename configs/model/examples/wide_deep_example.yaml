@@ -1,0 +1,7 @@
+# EXAMPLE ONLY: lightweight scaffold inspired by Wide & Deep Learning (arXiv:1606.07792).
+# Demonstrates a linear memorization branch plus a deep branch.
+_target_: models.paper_example_models.WideDeepExample
+hidden_dims: [128, 64]
+dropout: 0.1
+num_classes: 1
+task_type: binary_classification

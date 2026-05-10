@@ -1,0 +1,5 @@
+# EXAMPLE ONLY: trainer config for paper examples with auxiliary prediction heads.
+# Use regular trainer=binary when the model only returns {"logits": logits}.
+_target_: reproflow.example_trainers.AuxiliaryHeadBinaryTrainer
+aux_loss_weight: 0.1
+aux_output_key: auxiliary_logits

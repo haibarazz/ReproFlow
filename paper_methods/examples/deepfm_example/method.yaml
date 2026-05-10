@@ -1,0 +1,17 @@
+# EXAMPLE ONLY: scaffold for AI-assisted reproduction, not a completed reproduction.
+method_name: deepfm_example
+paper:
+  title: "DeepFM: A Factorization-Machine based Neural Network for CTR Prediction"
+  arxiv_id: "1703.04247"
+  url: "https://arxiv.org/abs/1703.04247"
+task:
+  default_task_type: binary_classification
+  example_dataset: sample_binary
+implementation:
+  model_py: models/paper_example_models.py
+  model_class: DeepFMExample
+  model_config: configs/model/examples/deepfm_example.yaml
+  trainer_config: configs/trainer/binary.yaml
+notes:
+  - "Example includes wide, FM interaction, and deep branches."
+  - "No CTR benchmark result is claimed."

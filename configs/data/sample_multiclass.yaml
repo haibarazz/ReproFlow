@@ -1,4 +1,8 @@
 name: sample_multiclass
+adapter:
+  _target_: reproflow.data.tabular.TabularDataAdapter
+dataset:
+  _target_: reproflow.data.tabular.TabularDataset
 path: dataset/sample_multiclass.csv
 task_type: multiclass_classification
 id_col: sample_id

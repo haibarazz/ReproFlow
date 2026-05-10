@@ -1,27 +1,31 @@
 <div align="center">
 
-# ReproFlow
+<img src="docs/assets/reproflow-poster.png" alt="ReproFlow 项目海报" width="100%" />
 
-**面向 AI 辅助论文复现的可复现实验框架**
+<h1>ReproFlow</h1>
 
-![Python](https://img.shields.io/badge/Python-3.8%2B-blue)
-![PyTorch](https://img.shields.io/badge/PyTorch-2.x-ee4c2c)
-![Hydra](https://img.shields.io/badge/Config-Hydra-4f46e5)
-![Status](https://img.shields.io/badge/Status-MVP-green)
+<p><strong>面向 AI 辅助论文复现的可复现实验框架</strong></p>
+
+<p>
+  <img alt="Python" src="https://img.shields.io/badge/Python-3.8%2B-blue" />
+  <img alt="PyTorch" src="https://img.shields.io/badge/PyTorch-2.x-ee4c2c" />
+  <img alt="Hydra" src="https://img.shields.io/badge/Config-Hydra-4f46e5" />
+  <img alt="Status" src="https://img.shields.io/badge/Status-MVP-green" />
+</p>
 
 </div>
 
 ReproFlow 帮助深度学习初学者和 AI coding agent 把论文方法复现到自己的数据集上，并在统一的数据、指标、随机种子和 baseline 下进行公平对比。
 
 <div align="center">
-  <a href="./docs/reproflow_architecture.html"><strong>查看小白友好的项目架构说明</strong></a>
+  <a href="./docs/assets/reproflow-architecture-guide.svg"><strong>查看小白友好的项目架构说明</strong></a>
 </div>
 
 ![ReproFlow 工作流](docs/assets/reproflow-workflow.svg)
 
 ## 项目定位
 
-现在 AI 已经很会写模型代码，但真实深度学习项目不只是“代码能跑”。最容易乱的是数据 schema、特征列、label、metric、seed、baseline、消融实验和日志输出。
+现在 AI 已经很会写模型代码，真实深度学习项目还需要管好数据 schema、特征列、label、metric、seed、baseline、消融实验和日志输出。
 
 ReproFlow 提供一个轻量、可配置、适合 AI 接入的实验基座：
 
@@ -29,7 +33,7 @@ ReproFlow 提供一个轻量、可配置、适合 AI 接入的实验基座：
 论文方法 -> 规范实现 -> 接入自定义数据集 -> 跑 baseline -> 多 seed / 消融 -> 输出可复现实验结果
 ```
 
-面向小白的架构说明见 [docs/reproflow_architecture.html](./docs/reproflow_architecture.html)。
+面向小白的架构说明见 [docs/assets/reproflow-architecture-guide.svg](./docs/assets/reproflow-architecture-guide.svg)。
 
 ## 核心能力
 

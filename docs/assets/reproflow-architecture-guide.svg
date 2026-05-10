@@ -1,0 +1,157 @@
+<svg width="1200" height="1560" viewBox="0 0 1200 1560" fill="none" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="ReproFlow 新手架构说明">
+  <defs>
+    <linearGradient id="hero" x1="60" y1="40" x2="1140" y2="260" gradientUnits="userSpaceOnUse">
+      <stop stop-color="#EFF6FF"/>
+      <stop offset="0.55" stop-color="#ECFEFF"/>
+      <stop offset="1" stop-color="#FFF7ED"/>
+    </linearGradient>
+    <filter id="shadow" x="-10%" y="-10%" width="120%" height="130%" color-interpolation-filters="sRGB">
+      <feDropShadow dx="0" dy="12" stdDeviation="14" flood-color="#111827" flood-opacity="0.10"/>
+    </filter>
+    <style>
+      .title { font-family: Arial, "PingFang SC", "Microsoft YaHei", sans-serif; font-size: 48px; font-weight: 800; fill: #111827; }
+      .subtitle { font-family: Arial, "PingFang SC", "Microsoft YaHei", sans-serif; font-size: 22px; fill: #374151; }
+      .section-title { font-family: Arial, "PingFang SC", "Microsoft YaHei", sans-serif; font-size: 28px; font-weight: 800; fill: #111827; }
+      .card-title { font-family: Arial, "PingFang SC", "Microsoft YaHei", sans-serif; font-size: 23px; font-weight: 800; fill: #111827; }
+      .label { font-family: Arial, "PingFang SC", "Microsoft YaHei", sans-serif; font-size: 17px; font-weight: 700; fill: #1F2937; }
+      .body { font-family: Arial, "PingFang SC", "Microsoft YaHei", sans-serif; font-size: 16px; fill: #4B5563; }
+      .small { font-family: Arial, "PingFang SC", "Microsoft YaHei", sans-serif; font-size: 14px; fill: #6B7280; }
+      .code { font-family: "SFMono-Regular", Consolas, Menlo, monospace; font-size: 15px; fill: #111827; }
+      .code-light { font-family: "SFMono-Regular", Consolas, Menlo, monospace; font-size: 15px; fill: #F9FAFB; }
+      .pill { font-family: Arial, "PingFang SC", "Microsoft YaHei", sans-serif; font-size: 15px; font-weight: 700; fill: #0F172A; }
+    </style>
+  </defs>
+
+  <rect width="1200" height="1560" fill="#F8FAFC"/>
+
+  <rect x="60" y="42" width="1080" height="230" rx="28" fill="url(#hero)" stroke="#DCE7F3"/>
+  <circle cx="1010" cy="118" r="44" fill="#DBEAFE"/>
+  <circle cx="1082" cy="192" r="28" fill="#CCFBF1"/>
+  <circle cx="928" cy="214" r="18" fill="#FED7AA"/>
+  <text x="98" y="118" class="title">ReproFlow 新手架构图</text>
+  <text x="100" y="164" class="subtitle">把自己的数据和论文放进固定位置，让 AI 按规范复现模型，框架负责公平训练和结果沉淀。</text>
+  <rect x="100" y="198" width="138" height="36" rx="18" fill="#DBEAFE"/>
+  <text x="122" y="222" class="pill">自定义数据集</text>
+  <rect x="254" y="198" width="138" height="36" rx="18" fill="#CCFBF1"/>
+  <text x="276" y="222" class="pill">论文方法接入</text>
+  <rect x="408" y="198" width="124" height="36" rx="18" fill="#FEF3C7"/>
+  <text x="430" y="222" class="pill">公平对比</text>
+  <rect x="548" y="198" width="124" height="36" rx="18" fill="#EDE9FE"/>
+  <text x="570" y="222" class="pill">轻量输出</text>
+
+  <text x="70" y="342" class="section-title">先看这条主线</text>
+  <text x="70" y="374" class="body">第一次使用时，只需要理解四个步骤。高级功能等跑通以后再看。</text>
+
+  <g filter="url(#shadow)">
+    <rect x="70" y="412" width="220" height="235" rx="22" fill="#FFFFFF" stroke="#D1D5DB"/>
+    <rect x="96" y="438" width="44" height="44" rx="22" fill="#2563EB"/>
+    <text x="111" y="467" font-family="Arial" font-size="22" font-weight="800" fill="#FFFFFF">1</text>
+    <text x="96" y="518" class="card-title">放数据</text>
+    <text x="96" y="552" class="body">把 CSV 放到 dataset/</text>
+    <text x="96" y="582" class="body">用 configs/data/</text>
+    <text x="96" y="612" class="body">声明 label、特征列和任务类型</text>
+  </g>
+
+  <path d="M300 530H336" stroke="#94A3B8" stroke-width="4" stroke-linecap="round"/>
+  <path d="M336 530L320 518M336 530L320 542" stroke="#94A3B8" stroke-width="4" stroke-linecap="round"/>
+
+  <g filter="url(#shadow)">
+    <rect x="350" y="412" width="220" height="235" rx="22" fill="#FFFFFF" stroke="#D1D5DB"/>
+    <rect x="376" y="438" width="44" height="44" rx="22" fill="#059669"/>
+    <text x="391" y="467" font-family="Arial" font-size="22" font-weight="800" fill="#FFFFFF">2</text>
+    <text x="376" y="518" class="card-title">放论文</text>
+    <text x="376" y="552" class="body">把 PDF 或 Markdown</text>
+    <text x="376" y="582" class="body">放到 docs/papers/</text>
+    <text x="376" y="612" class="body">AI 理解复现目标</text>
+  </g>
+
+  <path d="M580 530H616" stroke="#94A3B8" stroke-width="4" stroke-linecap="round"/>
+  <path d="M616 530L600 518M616 530L600 542" stroke="#94A3B8" stroke-width="4" stroke-linecap="round"/>
+
+  <g filter="url(#shadow)">
+    <rect x="630" y="412" width="220" height="235" rx="22" fill="#FFFFFF" stroke="#D1D5DB"/>
+    <rect x="656" y="438" width="44" height="44" rx="22" fill="#D97706"/>
+    <text x="671" y="467" font-family="Arial" font-size="22" font-weight="800" fill="#FFFFFF">3</text>
+    <text x="656" y="518" class="card-title">接模型</text>
+    <text x="656" y="552" class="body">AI 新增 models/</text>
+    <text x="656" y="582" class="body">和 configs/model/</text>
+    <text x="656" y="612" class="body">统一 forward 输出</text>
+  </g>
+
+  <path d="M860 530H896" stroke="#94A3B8" stroke-width="4" stroke-linecap="round"/>
+  <path d="M896 530L880 518M896 530L880 542" stroke="#94A3B8" stroke-width="4" stroke-linecap="round"/>
+
+  <g filter="url(#shadow)">
+    <rect x="910" y="412" width="220" height="235" rx="22" fill="#FFFFFF" stroke="#D1D5DB"/>
+    <rect x="936" y="438" width="44" height="44" rx="22" fill="#7C3AED"/>
+    <text x="951" y="467" font-family="Arial" font-size="22" font-weight="800" fill="#FFFFFF">4</text>
+    <text x="936" y="518" class="card-title">跑对比</text>
+    <text x="936" y="552" class="body">统一数据、指标</text>
+    <text x="936" y="582" class="body">统一随机种子</text>
+    <text x="936" y="612" class="body">沉淀 log 和 CSV</text>
+  </g>
+
+  <text x="70" y="724" class="section-title">项目里每一层负责什么</text>
+
+  <g filter="url(#shadow)">
+    <rect x="70" y="760" width="325" height="330" rx="22" fill="#FFFFFF" stroke="#D1D5DB"/>
+    <rect x="70" y="760" width="325" height="68" rx="22" fill="#EFF6FF"/>
+    <text x="98" y="804" class="card-title">你主要会改</text>
+    <text x="98" y="866" class="label">dataset/</text>
+    <text x="206" y="866" class="body">放自己的数据</text>
+    <text x="98" y="914" class="label">configs/data/</text>
+    <text x="238" y="914" class="body">说明列和任务</text>
+    <text x="98" y="962" class="label">docs/papers/</text>
+    <text x="232" y="962" class="body">放要复现的论文</text>
+    <text x="98" y="1010" class="label">configs/experiment/</text>
+    <text x="98" y="1040" class="body">组织完整对比实验</text>
+  </g>
+
+  <g filter="url(#shadow)">
+    <rect x="438" y="760" width="325" height="330" rx="22" fill="#FFFFFF" stroke="#D1D5DB"/>
+    <rect x="438" y="760" width="325" height="68" rx="22" fill="#ECFDF5"/>
+    <text x="466" y="804" class="card-title">AI 主要会改</text>
+    <text x="466" y="866" class="label">models/</text>
+    <text x="566" y="866" class="body">实现新模型</text>
+    <text x="466" y="914" class="label">configs/model/</text>
+    <text x="620" y="914" class="body">写超参数</text>
+    <text x="466" y="962" class="label">paper_methods/</text>
+    <text x="620" y="962" class="body">记录论文方法</text>
+    <text x="466" y="1010" class="label">configs/tuning/ablation/</text>
+    <text x="466" y="1040" class="body">补调参和消融配置</text>
+  </g>
+
+  <g filter="url(#shadow)">
+    <rect x="805" y="760" width="325" height="330" rx="22" fill="#FFFFFF" stroke="#D1D5DB"/>
+    <rect x="805" y="760" width="325" height="68" rx="22" fill="#FFF7ED"/>
+    <text x="833" y="804" class="card-title">框架帮你管</text>
+    <text x="833" y="866" class="label">Data_pre.py</text>
+    <text x="960" y="866" class="body">读取和切分</text>
+    <text x="833" y="914" class="label">Dataset.py</text>
+    <text x="948" y="914" class="body">统一 batch</text>
+    <text x="833" y="962" class="label">engine.py</text>
+    <text x="930" y="962" class="body">训练和 checkpoint</text>
+    <text x="833" y="1010" class="label">metrics/</text>
+    <text x="930" y="1010" class="body">统一指标计算</text>
+  </g>
+
+  <text x="70" y="1170" class="section-title">第一次训练只需要记住</text>
+
+  <rect x="70" y="1208" width="510" height="155" rx="20" fill="#111827"/>
+  <text x="100" y="1252" class="code-light">python scripts/doctor.py \</text>
+  <text x="100" y="1282" class="code-light">  data=sample_binary model=transformer \</text>
+  <text x="100" y="1312" class="code-light">  trainer=binary metrics=default</text>
+  <text x="100" y="1348" class="small" fill="#CBD5E1">先检查数据、模型、trainer、metrics 是否对齐</text>
+
+  <rect x="620" y="1208" width="510" height="155" rx="20" fill="#111827"/>
+  <text x="650" y="1252" class="code-light">python main.py \</text>
+  <text x="650" y="1282" class="code-light">  data=sample_binary model=transformer \</text>
+  <text x="650" y="1312" class="code-light">  trainer=binary metrics=default</text>
+  <text x="650" y="1348" class="small" fill="#CBD5E1">再跑一个最小训练，确认主流程可用</text>
+
+  <rect x="70" y="1405" width="1060" height="94" rx="20" fill="#FFFFFF" stroke="#D1D5DB"/>
+  <text x="100" y="1442" class="label">默认输出保持轻量：</text>
+  <text x="278" y="1442" class="body">一个训练 log、一个 history CSV、一个 best checkpoint。</text>
+  <text x="100" y="1478" class="label">AI 复现论文先读：</text>
+  <text x="268" y="1478" class="body">AGENTS.md、docs/ai_reproduction_guide.md、.claude/skills/、paper_methods/template/。</text>
+</svg>

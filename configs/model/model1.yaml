@@ -1,9 +1,0 @@
-_target_: models.model1.MYmodel1
-# 注意这个上面是对应着我们模型的具体存放位置，就是models的文件夹里面，然后model1.py里面的MYmodel这个类
-
-
-# 下面是一些常见的超参数
-input_dim : 32 
-hidden_dim : 64
-layers : 3
-dropout : 0.2

@@ -1,0 +1,30 @@
+paper:
+  title: "Paper title"
+  venue: "Venue or arXiv"
+  year: 2026
+  path: "docs/papers/paper.md"
+
+task:
+  type: "binary_classification"
+  dataset_config: "configs/data/my_task.yaml"
+  label: "label"
+  input_fields:
+    numeric: []
+    categorical: []
+    text: []
+
+method:
+  name: "method_name"
+  model_config: "configs/model/method_name.yaml"
+  trainer_config: "configs/trainer/binary.yaml"
+  tuning_config: "configs/tuning/method_name_grid.yaml"
+  forward_contract: "forward(batch) -> {'logits': logits}"
+
+baselines:
+  - "LogisticRegression"
+  - "RandomForest"
+  - "Transformer"
+
+validation:
+  smoke_command: "python main.py data=my_task model=method_name trainer=binary training_loop.epochs=1"
+  benchmark_command: "python run_ml_benchmark.py data=my_task"

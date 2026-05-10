@@ -6,4 +6,4 @@ dropout: 0.1
 rnn_type: rnn
 bidirectional: false
 num_classes: 1
-task_type: classification
+task_type: binary_classification

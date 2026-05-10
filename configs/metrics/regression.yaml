@@ -1,0 +1,8 @@
+name: regression_default
+primary: rmse
+include:
+  - mse
+  - rmse
+  - mae
+  - r2
+  - explained_variance

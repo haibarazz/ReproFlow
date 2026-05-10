@@ -48,11 +48,12 @@ checkpoints/*.pt
 !best_model.pth
 
 # 数据文件
-dataset
-dataset/*.csv
-dataset/*.json
-dataset/*.txt
+dataset/*
 !dataset/data.csv
+!dataset/sample_binary.csv
+!dataset/sample_multiclass.csv
+!dataset/sample_regression.csv
+!dataset/.gitkeep
 
 # 日志
 logs/

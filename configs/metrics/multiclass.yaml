@@ -1,0 +1,10 @@
+name: multiclass_default
+primary: f1_macro
+include:
+  - acc
+  - balanced_acc
+  - f1_macro
+  - f1_weighted
+  - precision_macro
+  - recall_macro
+  - auc_ovr

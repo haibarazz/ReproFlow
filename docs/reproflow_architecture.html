@@ -1,0 +1,399 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>ReproFlow 架构说明</title>
+  <style>
+    :root {
+      --bg: #f7f8fa;
+      --panel: #ffffff;
+      --text: #111827;
+      --muted: #6b7280;
+      --line: #d1d5db;
+      --blue: #2563eb;
+      --green: #059669;
+      --orange: #d97706;
+      --purple: #7c3aed;
+      --shadow: 0 14px 40px rgba(17, 24, 39, 0.08);
+    }
+    * { box-sizing: border-box; }
+    body {
+      margin: 0;
+      background: var(--bg);
+      color: var(--text);
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", "PingFang SC", "Microsoft YaHei", sans-serif;
+      line-height: 1.65;
+    }
+    .page {
+      width: min(1120px, calc(100% - 32px));
+      margin: 0 auto;
+      padding: 42px 0 64px;
+    }
+    .hero {
+      background: var(--panel);
+      border: 1px solid #e5e7eb;
+      border-radius: 18px;
+      box-shadow: var(--shadow);
+      padding: 38px;
+    }
+    .eyebrow {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      color: var(--blue);
+      font-weight: 700;
+      font-size: 14px;
+      margin-bottom: 12px;
+    }
+    .dot {
+      width: 9px;
+      height: 9px;
+      border-radius: 999px;
+      background: var(--blue);
+    }
+    h1 {
+      margin: 0;
+      font-size: clamp(34px, 5vw, 58px);
+      line-height: 1.08;
+      letter-spacing: 0;
+    }
+    .lead {
+      max-width: 760px;
+      margin: 18px 0 0;
+      color: #374151;
+      font-size: 18px;
+    }
+    .hero-grid {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 14px;
+      margin-top: 28px;
+    }
+    .mini-card {
+      border: 1px solid var(--line);
+      border-radius: 12px;
+      padding: 16px;
+      background: #fbfdff;
+    }
+    .mini-card strong {
+      display: block;
+      margin-bottom: 6px;
+      font-size: 15px;
+    }
+    .mini-card span {
+      color: var(--muted);
+      font-size: 14px;
+    }
+    section {
+      margin-top: 26px;
+      background: var(--panel);
+      border: 1px solid #e5e7eb;
+      border-radius: 16px;
+      box-shadow: 0 8px 24px rgba(17, 24, 39, 0.05);
+      padding: 30px;
+    }
+    h2 {
+      margin: 0 0 16px;
+      font-size: 25px;
+      letter-spacing: 0;
+    }
+    .workflow {
+      display: grid;
+      grid-template-columns: repeat(4, 1fr);
+      gap: 14px;
+      margin-top: 18px;
+    }
+    .step {
+      position: relative;
+      border: 1px solid var(--line);
+      border-radius: 14px;
+      padding: 18px;
+      min-height: 142px;
+      background: #fff;
+    }
+    .step-num {
+      display: inline-flex;
+      width: 30px;
+      height: 30px;
+      align-items: center;
+      justify-content: center;
+      border-radius: 999px;
+      color: #fff;
+      background: var(--blue);
+      font-weight: 800;
+      margin-bottom: 12px;
+    }
+    .step:nth-child(2) .step-num { background: var(--green); }
+    .step:nth-child(3) .step-num { background: var(--orange); }
+    .step:nth-child(4) .step-num { background: var(--purple); }
+    .step h3 {
+      margin: 0 0 8px;
+      font-size: 17px;
+    }
+    .step p {
+      margin: 0;
+      color: var(--muted);
+      font-size: 14px;
+    }
+    .map {
+      display: grid;
+      grid-template-columns: 1.05fr 1.1fr 1.05fr;
+      gap: 18px;
+      align-items: stretch;
+    }
+    .column {
+      border: 1px solid var(--line);
+      border-radius: 14px;
+      overflow: hidden;
+      background: #fff;
+    }
+    .column header {
+      padding: 14px 16px;
+      font-weight: 800;
+      border-bottom: 1px solid #e5e7eb;
+      background: #f9fafb;
+    }
+    .column ul {
+      list-style: none;
+      padding: 16px;
+      margin: 0;
+    }
+    .column li {
+      padding: 10px 0;
+      border-bottom: 1px solid #f1f5f9;
+    }
+    .column li:last-child { border-bottom: 0; }
+    code {
+      background: #f3f4f6;
+      border: 1px solid #e5e7eb;
+      border-radius: 6px;
+      padding: 2px 6px;
+      font-family: "SFMono-Regular", Consolas, monospace;
+      font-size: 0.92em;
+    }
+    pre {
+      margin: 14px 0 0;
+      padding: 16px;
+      overflow-x: auto;
+      border-radius: 12px;
+      background: #111827;
+      color: #f9fafb;
+      font-size: 14px;
+      line-height: 1.55;
+    }
+    .two-col {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 18px;
+    }
+    .note {
+      border-left: 4px solid var(--blue);
+      background: #eff6ff;
+      border-radius: 12px;
+      padding: 16px 18px;
+      color: #1f2937;
+    }
+    .output-list {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 14px;
+    }
+    .output {
+      padding: 16px;
+      border-radius: 12px;
+      border: 1px solid var(--line);
+      background: #fff;
+    }
+    .output b {
+      display: block;
+      margin-bottom: 6px;
+    }
+    .footer {
+      color: var(--muted);
+      text-align: center;
+      padding: 30px 0 0;
+      font-size: 14px;
+    }
+    @media (max-width: 860px) {
+      .hero, section { padding: 22px; }
+      .hero-grid, .workflow, .map, .two-col, .output-list {
+        grid-template-columns: 1fr;
+      }
+    }
+  </style>
+</head>
+<body>
+  <main class="page">
+    <div class="hero">
+      <div class="eyebrow"><span class="dot"></span>ReproFlow 给小白看的架构说明</div>
+      <h1>让 AI 写模型，让框架管实验</h1>
+      <p class="lead">
+        ReproFlow 的目标很直接：你把数据和论文放进固定位置，AI 按规范实现模型，框架负责数据读取、训练、指标、baseline、随机种子和结果输出。
+      </p>
+      <div class="hero-grid">
+        <div class="mini-card">
+          <strong>适合谁</strong>
+          <span>会用 AI 写代码，但还不熟悉深度学习项目组织的人。</span>
+        </div>
+        <div class="mini-card">
+          <strong>解决什么</strong>
+          <span>避免每篇论文都变成一堆散乱脚本。</span>
+        </div>
+        <div class="mini-card">
+          <strong>默认输出</strong>
+          <span>一个 log、一个 history CSV、一个 best checkpoint。</span>
+        </div>
+      </div>
+    </div>
+
+    <section>
+      <h2>先记住四步</h2>
+      <div class="workflow">
+        <div class="step">
+          <span class="step-num">1</span>
+          <h3>放数据</h3>
+          <p>把 CSV 放到 <code>dataset/</code>，再用 <code>configs/data</code> 说明哪些列是特征、哪个列是 label。</p>
+        </div>
+        <div class="step">
+          <span class="step-num">2</span>
+          <h3>放论文</h3>
+          <p>把 PDF 或 Markdown 放到 <code>docs/papers/</code>，AI 后续从这里理解要复现的方法。</p>
+        </div>
+        <div class="step">
+          <span class="step-num">3</span>
+          <h3>接模型</h3>
+          <p>模型放在 <code>models/</code>，参数放在 <code>configs/model</code>，输出统一为 <code>{"logits": logits}</code>。</p>
+        </div>
+        <div class="step">
+          <span class="step-num">4</span>
+          <h3>跑对比</h3>
+          <p>用同一份数据、同一组指标和同一批随机种子对比 baseline、论文方法和消融版本。</p>
+        </div>
+      </div>
+    </section>
+
+    <section>
+      <h2>项目里每一层负责什么</h2>
+      <div class="map">
+        <div class="column">
+          <header>你主要会改</header>
+          <ul>
+            <li><code>dataset/</code><br>放自己的数据</li>
+            <li><code>configs/data/</code><br>说明数据列和任务类型</li>
+            <li><code>docs/papers/</code><br>放要复现的论文</li>
+            <li><code>configs/experiment/</code><br>组织完整对比实验</li>
+          </ul>
+        </div>
+        <div class="column">
+          <header>AI 主要会改</header>
+          <ul>
+            <li><code>models/</code><br>实现新模型或论文方法</li>
+            <li><code>configs/model/</code><br>写模型超参数</li>
+            <li><code>paper_methods/</code><br>记录论文方法和复现说明</li>
+            <li><code>configs/tuning/</code> / <code>configs/ablation/</code><br>补调参和消融配置</li>
+          </ul>
+        </div>
+        <div class="column">
+          <header>框架帮你管</header>
+          <ul>
+            <li><code>Data_pre.py</code><br>读取、切分、预处理数据</li>
+            <li><code>Dataset.py</code><br>统一 batch 格式</li>
+            <li><code>engine.py</code><br>训练循环和 checkpoint</li>
+            <li><code>metrics/</code><br>统一计算评估指标</li>
+          </ul>
+        </div>
+      </div>
+    </section>
+
+    <section>
+      <h2>第一次训练只需要这三条命令</h2>
+      <div class="two-col">
+        <div>
+          <p>先检查数据、模型和 trainer 能否对上：</p>
+          <pre>python scripts/doctor.py data=sample_binary model=transformer trainer=binary metrics=default</pre>
+        </div>
+        <div>
+          <p>再跑一个最小训练：</p>
+          <pre>python main.py data=sample_binary model=transformer trainer=binary metrics=default training_loop.epochs=1</pre>
+        </div>
+      </div>
+      <div class="note" style="margin-top: 18px;">
+        小白最常见的问题集中在数据列名、label、task_type、trainer 对齐上。先跑 <code>doctor.py</code>，可以提前发现这类问题。
+      </div>
+    </section>
+
+    <section>
+      <h2>默认会生成什么</h2>
+      <div class="output-list">
+        <div class="output">
+          <b>训练日志</b>
+          <code>training_*.log</code>
+          <p>记录每轮训练和验证指标，方便看训练过程。</p>
+        </div>
+        <div class="output">
+          <b>指标表格</b>
+          <code>history_*.csv</code>
+          <p>每一行是一轮 epoch，适合后续画图和对比。</p>
+        </div>
+        <div class="output">
+          <b>最佳模型</b>
+          <code>checkpoints/*.pth</code>
+          <p>保存当前 monitor metric 最好的模型权重。</p>
+        </div>
+      </div>
+    </section>
+
+    <section>
+      <h2>AI 复现论文时看哪里</h2>
+      <div class="two-col">
+        <div>
+          <p>先让 AI 读这些文件：</p>
+          <pre>AGENTS.md
+docs/ai_reproduction_guide.md
+.claude/skills/reproflow-reproduce-paper/SKILL.md
+paper_methods/template/</pre>
+        </div>
+        <div>
+          <p>然后生成论文方法模板：</p>
+          <pre>python scripts/paper_methods/scaffold.py paper_xxx \
+  --paper docs/papers/paper_xxx.pdf \
+  --dataset my_task \
+  --trainer binary</pre>
+        </div>
+      </div>
+    </section>
+
+    <section>
+      <h2>什么时候再看高级功能</h2>
+      <div class="map">
+        <div class="column">
+          <header>想调参数</header>
+          <ul>
+            <li>看 <code>configs/tuning/</code></li>
+            <li>运行 <code>scripts/tuning/run_grid_search.py</code></li>
+          </ul>
+        </div>
+        <div class="column">
+          <header>想做消融</header>
+          <ul>
+            <li>看 <code>configs/ablation/</code></li>
+            <li>运行 <code>scripts/ablation/run_ablation.py</code></li>
+          </ul>
+        </div>
+        <div class="column">
+          <header>想公平对比</header>
+          <ul>
+            <li>看 <code>configs/experiment/</code></li>
+            <li>运行 <code>scripts/experiment/run_experiment.py</code></li>
+          </ul>
+        </div>
+      </div>
+    </section>
+
+    <div class="footer">
+      ReproFlow keeps the first run simple: data config, model config, trainer, metrics, log, CSV, checkpoint.
+    </div>
+  </main>
+</body>
+</html>

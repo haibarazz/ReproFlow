@@ -1,11 +1,11 @@
-# 这个里面是一些关于通用的训练的一些参数
-
-train_ratio: 0.8
-random_state: 42
 learning_rate: 0.001
-epochs: 150
-batch_size : 256
+epochs: 20
+batch_size: 256
 weight_decay: 5e-5
 early_stop_patience: 20
-task_type: classification
-device: "cuda"
+early_stop_delta: 1e-8
+max_grad_norm: 1.0
+scheduler_patience: 10
+scheduler_factor: 0.5
+monitor_metric: val_loss
+monitor_mode: min

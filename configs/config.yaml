@@ -1,12 +1,44 @@
-# 这个是我们通用的这个超参数管理和设置，不包括具体的模型超参数
 defaults:
-  # 可选模型: model1, model2, rnn, gru, lstm, transformer（对应 config/models/ 下的配置）
+  - data: sample_binary
   - model: transformer
-  - training_loop : default
-  - trainer : base
+  - training_loop: default
+  - trainer: binary
+  - metrics: default
   - _self_
-# 设备配置
-data_dir: "dataset\\data.csv"
+
 device: "cuda"
-best_model_path: "checkpoints/best_${hydra:runtime.choices.model}_model.pth"  # 随所选模型名自动生成 # 这个是我们的模型参数保存的地址，方便我们后续断点恢复之类的
-log_path : "result"
+
+experiment:
+  name: reproflow_sample
+  tags: []
+
+random:
+  seed: 42
+  cudnn_deterministic: true
+  cudnn_benchmark: false
+  use_deterministic_algorithms: false
+  deterministic_warn_only: true
+  python_hash_seed: null
+
+tracking:
+  enabled: false
+  output_dir: "result/tracking"
+  experiment_id: null
+  run_id: null
+
+best_model_path: "checkpoints/${data.name}/${hydra:runtime.choices.model}.pth"
+log_path: "result/${data.name}/${hydra:runtime.choices.model}"
+
+report:
+  enabled: false
+  output_dir: "result/reports"
+
+artifacts:
+  save_events: false
+  save_metrics_json: false
+  save_predictions: false
+  save_manifest: false
+
+hydra:
+  run:
+    dir: outputs/${now:%Y-%m-%d}/${now:%H-%M-%S}

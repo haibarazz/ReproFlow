@@ -1,0 +1,34 @@
+experiment_name: binary_smoke_comparison
+output_root: result/experiments
+
+data: sample_binary
+trainer: binary
+training_loop: default
+metrics: default
+seeds: [42, 43, 44]
+seed_overrides:
+  - random.seed
+seed_controls_data_split: false
+
+monitor_metric: val_auc
+monitor_mode: max
+benchmark_metric: roc_auc
+
+base_overrides:
+  training_loop.epochs: 2
+  training_loop.batch_size: 128
+  training_loop.monitor_metric: val_auc
+  training_loop.monitor_mode: max
+
+methods:
+  - name: transformer
+    type: deep_learning
+    model: transformer
+    overrides: {}
+  - name: rnn
+    type: deep_learning
+    model: rnn
+    overrides: {}
+  - name: traditional_ml
+    type: ml_benchmark
+    primary_metric: roc_auc

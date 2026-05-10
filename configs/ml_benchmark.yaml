@@ -1,82 +1,64 @@
-# ML Benchmark 配置文件
-# 使用方法：修改 enable 字段来启用/禁用模型和指标
+defaults:
+  - data: sample_binary
+  - _self_
 
-# 任务类型
-task_type: classification  # classification 或 regression
+# Traditional ML benchmark. It uses the same configs/data/*.yaml contract as main.py.
+task_type: classification
 
-# 模型选择（将不需要的模型设为 false）
 models:
-  # 线性模型
   LogisticRegression: true
   SGDClassifier: true
   LinearRegression: true
-  Ridge: false
+  Ridge: true
   Lasso: false
   ElasticNet: false
-
-  # 树模型
   DecisionTreeClassifier: true
-  DecisionTreeRegressor: false
+  DecisionTreeRegressor: true
   RandomForestClassifier: true
-  RandomForestRegressor: false
+  RandomForestRegressor: true
   ExtraTreesClassifier: false
   ExtraTreesRegressor: false
-
-  # Boosting 模型
   GradientBoostingClassifier: true
-  GradientBoostingRegressor: false
-  XGBoostClassifier: true
+  GradientBoostingRegressor: true
+  XGBoostClassifier: false
   XGBoostRegressor: false
-  LightGBMClassifier: true
+  LightGBMClassifier: false
   LightGBMRegressor: false
   CatBoostClassifier: false
   CatBoostRegressor: false
   AdaBoostClassifier: true
   AdaBoostRegressor: false
-
-  # SVM 模型
   SVC: false
   LinearSVC: false
   SVR: false
-
-  # KNN 模型
   KNeighborsClassifier: false
   KNeighborsRegressor: false
-
-  # 朴素贝叶斯
   GaussianNB: false
   MultinomialNB: false
   BernoulliNB: false
 
-# 评估指标选择（将不需要的指标设为 false）
 metrics:
-  # 分类指标
-  accuracy: false
-  precision: false
-  recall: false
-  f1: false
-  roc_auc: false
+  accuracy: true
+  precision: true
+  recall: true
+  f1: true
+  roc_auc: true
   confusion_matrix: false
-
-  # 回归指标
   mse: true
   mae: true
   r2: true
   rmse: true
 
-# 结果保存配置
 output:
   save_dir: ml_results
-  verbose: false  # 设为 true 则输出详细信息（包括参数、训练时间等）
-  save_format:  # 可以同时保存多种格式
+  verbose: false
+  primary_metric: null
+  save_format:
     csv: true
     json: false
 
-# 参数搜索配置（可选）
 param_search:
-  enable: false  # 是否启用参数搜索
-  search_type: grid  # grid 或 random
-  cv: 5  # 交叉验证折数
-  n_iter: 10  # 随机搜索迭代次数
-
-data_dir: "dataset\\data.csv"
+  enable: false
+  search_type: grid
+  cv: 5
+  n_iter: 10

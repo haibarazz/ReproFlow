@@ -1,0 +1,17 @@
+name: sample_regression
+path: dataset/sample_regression.csv
+task_type: regression
+id_col: sample_id
+label_col: label
+numeric_cols: [num_0, num_1, num_2, num_3, num_4]
+categorical_cols: [cat_0, cat_1, cat_2]
+text_cols: []
+split:
+  strategy: random
+  train_ratio: 0.8
+  random_state: 42
+preprocess:
+  scale_numeric: true
+  encode_categorical: true
+text:
+  max_features: 256

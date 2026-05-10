@@ -1,39 +1,52 @@
-# 这个里面是我们构造数据集的代码,在深度学习里面，构建数据集是十分重要的一环，
-# 这里面可能回涉及到各种这个数据增强什么其他的手段
-"""
-Yang Zhou 
-created on 2025-11-10
-"""
+from __future__ import annotations
 
-import pandas as pd
-import numpy as np
-import torch
-from torch.utils.data import DataLoader, Dataset
 from typing import Sequence
-from Feature_selected import FEATURE
 
+import torch
+from torch.utils.data import Dataset
 
 
 class BaseDataset(Dataset):
-    """
-    这只是一个最基础的数据处理
-    """
-    def __init__(self, df):
-        """
-        这个里面也可以放一些数据处理的操作，数据增强之类的
-        """
-        self.df = df.reset_index(drop=True)
+    """Generic tabular dataset driven by configs/data/*.yaml."""
 
-        basic_features = FEATURE.num_order_feat + FEATURE.cat_order_feat
-        self.feature = torch.FloatTensor(df[basic_features].values)
-        self.labels = torch.FloatTensor(df['label'].values)
-    
-    def __len__(self):
+    def __init__(
+        self,
+        df,
+        feature_cols: Sequence[str],
+        label_col: str,
+        task_type: str,
+        sample_id_col: str | None = None,
+    ) -> None:
+        self.df = df.reset_index(drop=True)
+        self.feature_cols = list(feature_cols)
+        self.label_col = label_col
+        self.task_type = task_type
+        self.sample_id_col = sample_id_col if sample_id_col in self.df.columns else None
+
+        if not self.feature_cols:
+            raise ValueError("BaseDataset requires at least one feature column.")
+        missing = [col for col in self.feature_cols + [self.label_col] if col not in self.df.columns]
+        if missing:
+            raise ValueError(f"Dataset is missing columns: {missing}")
+
+        self.features = torch.tensor(
+            self.df[self.feature_cols].values,
+            dtype=torch.float32,
+        )
+
+        if self.task_type == "multiclass_classification":
+            self.labels = torch.tensor(self.df[self.label_col].values, dtype=torch.long)
+        else:
+            self.labels = torch.tensor(self.df[self.label_col].values, dtype=torch.float32)
+
+    def __len__(self) -> int:
         return len(self.df)
-    
-    def __getitem__(self, idx):
-        return {
-            # 基础特征
-            'basic_features': self.feature[idx],
-            'label': self.labels[idx],
+
+    def __getitem__(self, idx: int) -> dict[str, torch.Tensor | str]:
+        item: dict[str, torch.Tensor | str] = {
+            "basic_features": self.features[idx],
+            "label": self.labels[idx],
         }
+        if self.sample_id_col is not None:
+            item["sample_id"] = str(self.df.iloc[idx][self.sample_id_col])
+        return item

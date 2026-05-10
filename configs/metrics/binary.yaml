@@ -1,0 +1,12 @@
+name: binary_default
+primary: auc
+threshold: 0.5
+include:
+  - acc
+  - f1
+  - recall
+  - precision
+  - mcc
+  - auc
+  - auc_pr
+  - brier

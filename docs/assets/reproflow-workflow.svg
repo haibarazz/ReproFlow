@@ -1,0 +1,25 @@
+<svg width="960" height="260" viewBox="0 0 960 260" fill="none" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="ReproFlow workflow">
+  <rect width="960" height="260" rx="18" fill="#F7F8FA"/>
+  <text x="40" y="48" font-family="Arial, Helvetica, sans-serif" font-size="24" font-weight="700" fill="#111827">ReproFlow 工作流</text>
+  <text x="40" y="78" font-family="Arial, Helvetica, sans-serif" font-size="14" fill="#4B5563">把 AI 生成的论文复现代码，约束到可比较、可复现的实验流程里。</text>
+  <g font-family="Arial, Helvetica, sans-serif">
+    <rect x="40" y="115" width="145" height="82" rx="10" fill="#FFFFFF" stroke="#D1D5DB"/>
+    <text x="70" y="148" font-size="16" font-weight="700" fill="#111827">放数据</text>
+    <text x="60" y="174" font-size="12" fill="#6B7280">dataset/ + schema</text>
+    <path d="M205 156H255" stroke="#9CA3AF" stroke-width="2"/>
+    <path d="M249 149L257 156L249 163" stroke="#9CA3AF" stroke-width="2" fill="none"/>
+    <rect x="275" y="115" width="145" height="82" rx="10" fill="#FFFFFF" stroke="#D1D5DB"/>
+    <text x="305" y="148" font-size="16" font-weight="700" fill="#111827">放论文</text>
+    <text x="298" y="174" font-size="12" fill="#6B7280">docs/papers/</text>
+    <path d="M440 156H490" stroke="#9CA3AF" stroke-width="2"/>
+    <path d="M484 149L492 156L484 163" stroke="#9CA3AF" stroke-width="2" fill="none"/>
+    <rect x="510" y="115" width="165" height="82" rx="10" fill="#FFFFFF" stroke="#D1D5DB"/>
+    <text x="545" y="148" font-size="16" font-weight="700" fill="#111827">AI 接入方法</text>
+    <text x="535" y="174" font-size="12" fill="#6B7280">model / trainer / config</text>
+    <path d="M695 156H745" stroke="#9CA3AF" stroke-width="2"/>
+    <path d="M739 149L747 156L739 163" stroke="#9CA3AF" stroke-width="2" fill="none"/>
+    <rect x="765" y="115" width="155" height="82" rx="10" fill="#FFFFFF" stroke="#D1D5DB"/>
+    <text x="800" y="148" font-size="16" font-weight="700" fill="#111827">公平实验</text>
+    <text x="792" y="174" font-size="12" fill="#6B7280">baseline / seed / metric</text>
+  </g>
+</svg>

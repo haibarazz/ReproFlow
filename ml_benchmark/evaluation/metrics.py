@@ -40,6 +40,7 @@ class MetricsCalculator:
         'mse': mean_squared_error,
         'mae': mean_absolute_error,
         'r2': r2_score,
+        'rmse': None,
     }
 
     # 所有指标
@@ -102,6 +103,8 @@ class MetricsCalculator:
                 elif metric in ['precision', 'recall', 'f1']:
                     # 这些指标需要指定 average 参数
                     results[metric] = cls.METRIC_REGISTRY[metric](y_true, y_pred, average=average, zero_division=0)
+                elif metric == 'rmse':
+                    results[metric] = cls.calculate_rmse(y_true, y_pred)
                 else:
                     # 其他指标直接计算
                     results[metric] = cls.METRIC_REGISTRY[metric](y_true, y_pred)

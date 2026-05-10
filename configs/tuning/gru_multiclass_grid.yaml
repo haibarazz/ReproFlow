@@ -1,0 +1,29 @@
+main_script: main.py
+config_name: config
+tuning_name: gru_multiclass_grid
+
+choices:
+  data: sample_multiclass
+  model: gru
+  trainer: multiclass
+  training_loop: default
+  metrics: default
+
+monitor_metric: val_acc
+monitor_mode: max
+output_root: result/tuning
+seeds: [42, 43, 44]
+seed_overrides:
+  - random.seed
+seed_controls_data_split: false
+
+base_overrides:
+  training_loop.epochs: 2
+  training_loop.batch_size: 128
+  training_loop.monitor_metric: val_acc
+  training_loop.monitor_mode: max
+
+grid:
+  model.hidden_dim: [32, 64]
+  model.n_layers: [1, 2]
+  training_loop.learning_rate: [0.001]

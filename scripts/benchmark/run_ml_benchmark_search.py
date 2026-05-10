@@ -1,20 +1,22 @@
 """
 参数搜索脚本
 使用示例：
-    python run_ml_benchmark_search.py --model LogisticRegression --search-type grid
-    python run_ml_benchmark_search.py --model RandomForest --search-type random --n-iter 20
+    python scripts/benchmark/run_ml_benchmark_search.py --model LogisticRegression --search-type grid
+    python scripts/benchmark/run_ml_benchmark_search.py --model RandomForest --search-type random --n-iter 20
 """
 
 import argparse
 import sys
-import os
+from pathlib import Path
 
 # 添加项目根目录到 Python 路径
-sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
+ROOT = Path(__file__).resolve().parents[2]
+sys.path.insert(0, str(ROOT))
 
 from ml_benchmark.models import MODEL_REGISTRY
 from ml_benchmark.utils.param_search import ParamSearcher
 from ml_benchmark.utils.data_loader import MLDataLoader
+from Data_pre import get_data_config
 
 
 def parse_args():
@@ -23,9 +25,9 @@ def parse_args():
         formatter_class=argparse.RawDescriptionHelpFormatter,
         epilog="""
 使用示例:
-  python run_ml_benchmark_search.py --model LogisticRegression --search-type grid
-  python run_ml_benchmark_search.py --model RandomForest --search-type random --n-iter 20
-  python run_ml_benchmark_search.py --model XGBoostClassifier --cv 3
+  python scripts/benchmark/run_ml_benchmark_search.py --model LogisticRegression --search-type grid
+  python scripts/benchmark/run_ml_benchmark_search.py --model RandomForest --search-type random --n-iter 20
+  python scripts/benchmark/run_ml_benchmark_search.py --model XGBoostClassifier --cv 3
         """
     )
 
@@ -132,31 +134,31 @@ def main():
     # 创建一个简单的配置对象（用于数据路径）
     class SimpleConfig:
         def __init__(self):
-            # 读取主配置文件获取 data_dir
-            import yaml
             from pathlib import Path
+            from omegaconf import OmegaConf
 
-            config_path = Path(__file__).parent / "configs" / "ml_benchmark.yaml"
+            config_path = ROOT / "configs" / "ml_benchmark.yaml"
             if config_path.exists():
-                with open(config_path, 'r', encoding='utf-8') as f:
-                    config = yaml.safe_load(f)
-                    self.data_dir = config.get('data_dir', 'data.csv')
+                self._cfg = OmegaConf.load(config_path)
             else:
-                # 如果配置文件不存在，使用默认值
-                self.data_dir = 'data.csv'
+                self._cfg = OmegaConf.create({"data": {"path": "dataset/sample_binary.csv"}})
+
+        def get(self, key, default=None):
+            return self._cfg.get(key, default)
 
     cfg = SimpleConfig()
 
-    # 使用 ML Benchmark 独立的数据加载器
-    from Feature_selected import FEATURE
-    feature_cols = FEATURE.num_order_feat + FEATURE.cat_order_feat
+    data_cfg = get_data_config(cfg._cfg)
+    feature_cols = list(data_cfg.get("numeric_cols", [])) + list(data_cfg.get("categorical_cols", []))
 
     loader = MLDataLoader(cfg)
     X_train, y_train, X_test, y_test = loader.prepare_data(
         feature_cols=feature_cols,
-        label_col=FEATURE.label,
-        train_ratio=0.8,
-        random_state=42
+        label_col=str(data_cfg.label_col),
+        train_ratio=float(data_cfg.get("split", {}).get("train_ratio", 0.8)),
+        random_state=int(data_cfg.get("split", {}).get("random_state", 42)),
+        cat_features=list(data_cfg.get("categorical_cols", [])),
+        num_features=list(data_cfg.get("numeric_cols", [])),
     )
 
     # 创建模型

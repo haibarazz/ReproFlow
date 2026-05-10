@@ -21,7 +21,7 @@ class MLDataLoader:
         初始化数据加载器
 
         Args:
-            cfg: Hydra 配置对象，必须包含 data_dir 字段
+            cfg: Hydra 配置对象，支持 data.path 或 legacy data_dir 字段
         """
         self.cfg = cfg
         self.encoders = {}
@@ -34,7 +34,9 @@ class MLDataLoader:
         Returns:
             pd.DataFrame: 原始数据集
         """
-        data_path = to_absolute_path(self.cfg.data_dir)
+        data_path_cfg = self.cfg.get("data", {}).get("path") if hasattr(self.cfg, "get") else None
+        legacy_path = getattr(self.cfg, "data_dir", "dataset/sample_binary.csv")
+        data_path = to_absolute_path(str(data_path_cfg or legacy_path))
 
         if not os.path.exists(data_path):
             raise FileNotFoundError(f"数据文件不存在: {data_path}")
@@ -65,11 +67,16 @@ class MLDataLoader:
         """
         print(f"\n✂️  划分训练集和测试集 (比例 {train_ratio:.0%}:{1-train_ratio:.0%})")
 
+        task_type = str(self.cfg.get("task_type", "classification")) if hasattr(self.cfg, "get") else "classification"
+        stratify = df[label_col]
+        if task_type == "regression" or df[label_col].value_counts(dropna=False).min() < 2:
+            stratify = None
+
         train_df, test_df = train_test_split(
             df,
             test_size=1 - train_ratio,
             random_state=random_state,
-            stratify=df[label_col]
+            stratify=stratify,
         )
 
         print(f"   训练集: {len(train_df)} 条")

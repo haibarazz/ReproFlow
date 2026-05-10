@@ -1,224 +1,275 @@
-# 深度学习训练模板（Hydra 进阶参数管理版）🚀
+<div align="center">
 
-[![Python](https://img.shields.io/badge/Python-3.8+-blue.svg)](https://www.python.org/downloads/)
-[![PyTorch](https://img.shields.io/badge/PyTorch-2.0+-red.svg)](https://pytorch.org/)
-[![Hydra](https://img.shields.io/badge/Hydra-1.x-0099cc.svg)](https://hydra.cc/)
-[![Status](https://img.shields.io/badge/Status-持续更新-yellow.svg)](https://github.com/haibarazz/Deeplearning-Framework)
+# ReproFlow
 
-> 针对多模型、快速试验场景打造的训练脚手架，重点强化了 **参数管理与配置组合能力**，让「换模型/改流程」只需更新配置即可。
+**面向 AI 辅助论文复现的可复现实验框架**
 
-## ✨ 项目亮点
+![Python](https://img.shields.io/badge/Python-3.8%2B-blue)
+![PyTorch](https://img.shields.io/badge/PyTorch-2.x-ee4c2c)
+![Hydra](https://img.shields.io/badge/Config-Hydra-4f46e5)
+![Status](https://img.shields.io/badge/Status-MVP-green)
 
-- �️ **进阶参数管理**：基于 Hydra 组合式配置，`configs/model/*.yaml` 与 `configs/training_loop/*.yaml` 可自由拼装，`main.py` 中会根据配置动态计算输入维度、实例化模型并注入任务类型。
-- 🧠 **多任务友好**：同一个训练循环可在二分类、多分类、回归间切换，指标、损失函数、头部结构都会自动对齐。
-- 🪄 **断点续训即插即用**：`load_training` 会从指定 checkpoint 恢复模型、优化器及调度器状态，无缝衔接训练历史。
-- � **可追溯训练日志**：`result/` 下自动生成日志与 CSV 记录，便于后续分析与可视化。
-- 🧱 **贴合实际目录结构**：所有脚本、配置、数据、模型、输出全部按模块归位，下方结构即当前仓库真实布局。
+</div>
 
-## 🗂️ 项目结构
+ReproFlow 帮助深度学习初学者和 AI coding agent 把论文方法复现到自己的数据集上，并在统一的数据、指标、随机种子和 baseline 下进行公平对比。
 
+<div align="center">
+  <a href="./docs/reproflow_architecture.html"><strong>查看小白友好的项目架构说明</strong></a>
+</div>
+
+![ReproFlow 工作流](docs/assets/reproflow-workflow.svg)
+
+## 项目定位
+
+现在 AI 已经很会写模型代码，但真实深度学习项目不只是“代码能跑”。最容易乱的是数据 schema、特征列、label、metric、seed、baseline、消融实验和日志输出。
+
+ReproFlow 提供一个轻量、可配置、适合 AI 接入的实验基座：
+
+```text
+论文方法 -> 规范实现 -> 接入自定义数据集 -> 跑 baseline -> 多 seed / 消融 -> 输出可复现实验结果
 ```
+
+面向小白的架构说明见 [docs/reproflow_architecture.html](./docs/reproflow_architecture.html)。
+
+## 核心能力
+
+- 自定义数据集：通过 `configs/data/*.yaml` 声明数据路径、label、特征列和 split。
+- 常见任务：支持二分类、多分类、回归。
+- 指标配置：通过 `configs/metrics/*.yaml` 选择评估指标，不在 trainer 里硬编码。
+- 传统 ML baseline：保留 `run_ml_benchmark.py`，方便和深度学习方法公平对比。
+- 多随机种子：`configs/tuning/`、`configs/ablation/`、`configs/experiment/` 都支持 `seeds: [...]`。
+- 调参和消融：支持 grid/candidates tuning，也支持一等公民的 ablation runner。
+- AI 复现规范：内置 `AGENTS.md`、`.claude/skills/`、`paper_methods/template/`。
+- 简洁训练输出：默认只输出一个训练 log、一个 history CSV 和 best checkpoint。
+
+## 架构
+
+![ReproFlow 架构](docs/assets/reproflow-architecture.svg)
+
+```text
 Deeplearning-Framework/
+├── main.py                 # Hydra 训练入口
+├── Data_pre.py             # 数据读取、切分、预处理
+├── Dataset.py              # PyTorch Dataset
+├── engine.py               # 二分类 / 多分类 / 回归 trainer
+├── models/                 # 深度学习模型
+├── metrics/                # 指标注册与计算
+├── ml_benchmark/           # 传统 ML baseline
 ├── configs/
-│   ├── config.yaml                 # 顶层入口配置（defaults 组合）
-│   ├── model/                      # 模型超参组（lstm、gru、transformer...）
-│   ├── training_loop/              # 训练/优化策略（learning rate、epoch 等）
-│   └── ml_benchmark.yaml           # 传统 ML Benchmark 配置
-├── dataset/
-│   └── data.csv                    # 示例数据
-├── models/
-│   ├── rnn_models.py               # RNN/GRU/LSTM/Transformer 统一实现
-│   ├── model1.py / model2.py       # 自定义样例模型
-│   └── model_utils.py              # 额外工具
-├── ml_benchmark/                   # 传统机器学习 Benchmark 模块
-│   ├── models/                     # 30+ 传统 ML 模型实现
-│   │   ├── base_model.py           # 抽象基类
-│   │   ├── linear_models.py        # 线性模型
-│   │   ├── tree_models.py          # 树模型
-│   │   ├── ensemble_models.py      # 集成模型
-│   │   ├── svm_models.py           # SVM 模型
-│   │   ├── neighbor_models.py      # KNN 模型
-│   │   └── naive_bayes.py          # 朴素贝叶斯
-│   ├── evaluation/                 # 评估模块
-│   │   └── metrics.py              # 评估指标计算
-│   ├── utils/                      # 工具函数
-│   │   ├── data_loader.py          # 独立数据加载器
-│   │   └── param_search.py         # 参数搜索工具
-│   └── runner.py                   # Benchmark 运行器
-├── checkpoints/                    # 断点权重输出
-├── outputs/                        # Hydra 默认输出（保留历史 log）
-├── result/                         # 自定义训练日志与指标记录
-├── Data_pre.py                     # 数据加载+特征工程
-├── Dataset.py                      # Dataset 封装
-├── Feature_selected.py             # 特征列定义
-├── engine.py                       # 训练/验证流程 + 指标
-├── main.py                         # 入口，负责组合配置与启动训练
-├── run_ml_benchmark.py             # ML Benchmark 运行脚本
-├── run_ml_benchmark_search.py      # 参数搜索脚本
-├── utils.py                        # EarlyStopping、LR 调度等
-├── requirements.txt
-└── README.md
+│   ├── data/               # 数据 schema
+│   ├── model/              # 模型参数
+│   ├── trainer/            # trainer 选择
+│   ├── metrics/            # 指标组合
+│   ├── experiment/         # 公平对比实验
+│   ├── tuning/             # 调参
+│   └── ablation/           # 消融实验
+├── docs/
+│   ├── papers/             # 论文 PDF / Markdown
+│   ├── architecture.md
+│   └── ai_reproduction_guide.md
+├── paper_methods/template/ # 论文方法模板
+├── .claude/skills/         # 项目内置 AI skills
+├── AGENTS.md               # AI agent 总入口
+└── scripts/                # doctor / tuning / ablation / experiment / report 工具
 ```
 
-## 🚀 快速上手
+## 快速开始
 
-1. **安装依赖**
-   ```bash
-   pip install -r requirements.txt
-   ```
+安装依赖：
 
-2. **运行默认实验**（默认 Transformer + classification）
-   ```bash
-   python main.py
-   ```
-
-3. **替换模型或训练策略**
-   ```bash
-   python main.py model=lstm training_loop=default
-   python main.py model=gru training_loop=trainer/base
-   ```
-
-4. **调整单个超参**（所有字段均可在命令行覆盖）
-   ```bash
-   python main.py training_loop.learning_rate=3e-4 training_loop.batch_size=256
-   ```
-
-5. **断点续训**
-   ```bash
-   python main.py resume.checkpoint=checkpoints/best_lstm_model.pth
-   ```
-
-## 🤖 传统机器学习 Benchmark
-
-项目内置了完整的传统机器学习模型评估模块，支持 30+ 经典模型的快速对比与参数搜索。
-
-### 支持的模型
-
-**分类模型（20+）**
-- 线性模型：LogisticRegression, SGDClassifier
-- 树模型：DecisionTree, RandomForest, ExtraTrees
-- Boosting：GradientBoosting, XGBoost, LightGBM, CatBoost, AdaBoost
-- 其他：SVM, KNN, 朴素贝叶斯
-
-**回归模型（10+）**
-- 线性模型：LinearRegression, Ridge, Lasso, ElasticNet, SGDRegressor
-- 树模型：DecisionTree, RandomForest, ExtraTrees
-- Boosting：GradientBoosting, XGBoost, LightGBM, CatBoost, AdaBoost
-- 其他：SVR, KNN
-
-### 快速使用
-
-**1. 批量运行模型对比**
 ```bash
-# 使用默认配置（configs/ml_benchmark.yaml）
-python run_ml_benchmark.py
-
-# 启用详细输出
-python run_ml_benchmark.py output.verbose=true
-
-# 切换为回归任务
-python run_ml_benchmark.py task_type=regression
+pip install -r requirements.txt
 ```
 
-**2. 单个模型参数搜索**
+生成示例数据：
+
 ```bash
-# Grid Search
-python run_ml_benchmark_search.py --model RandomForest --search-type grid
-
-# Random Search
-python run_ml_benchmark_search.py --model XGBoostClassifier --search-type random --n-iter 20
-
-# 查看所有可用模型
-python run_ml_benchmark_search.py --list-models
+python scripts/data/generate_synthetic_data.py
 ```
 
-### 配置说明
+训练一个二分类模型：
 
-在 `configs/ml_benchmark.yaml` 中通过 `true/false` 选择模型和指标：
+```bash
+python main.py data=sample_binary model=transformer trainer=binary metrics=default
+```
+
+训练多分类和回归：
+
+```bash
+python main.py data=sample_multiclass model=transformer trainer=multiclass metrics=default
+python main.py data=sample_regression model=transformer trainer=regression metrics=default
+```
+
+## 默认输出
+
+默认训练输出保持克制：
+
+```text
+result/<dataset>/<model>/training_<time>.log
+result/<dataset>/<model>/history_<time>.csv
+checkpoints/<dataset>/<model>.pth
+```
+
+也就是说，默认只有：
+
+- 一个训练日志
+- 一个 epoch-level history CSV
+- 一个 best checkpoint
+
+如果确实需要更详细的报告、预测文件或结构化 tracking，可以在命令行显式打开：
+
+```bash
+python main.py report.enabled=true artifacts.save_predictions=true artifacts.save_manifest=true
+```
+
+## 接入自己的数据集
+
+把数据放进 `dataset/`，然后新增一个数据配置：
 
 ```yaml
-task_type: classification  # classification 或 regression
-
-models:
-  LogisticRegression: true
-  RandomForest: true
-  XGBoostClassifier: false
-
-metrics:
-  accuracy: true
-  f1: true
-  roc_auc: false
-
-output:
-  save_dir: ml_results
-  verbose: false
+# configs/data/my_task.yaml
+name: my_task
+path: dataset/my_task/data.csv
+task_type: binary_classification
+id_col: sample_id
+label_col: label
+numeric_cols: [age, price, count]
+categorical_cols: [department, city]
+text_cols: []
+split:
+  strategy: random
+  train_ratio: 0.8
+  random_state: 42
+preprocess:
+  scale_numeric: true
+  encode_categorical: true
 ```
 
-### 模块特点
+训练前先检查：
 
-- ✅ **完全独立**：不依赖深度学习框架的数据流程
-- ✅ **统一接口**：所有模型使用相同的调用方式
-- ✅ **参数搜索**：内置 Grid Search 和 Random Search
-- ✅ **灵活配置**：YAML + 命令行参数覆盖
-- ✅ **结果保存**：CSV + JSON 双格式输出
-- ✅ **自动预处理**：数据标准化、特征编码自动处理
+```bash
+python scripts/doctor.py data=my_task model=transformer trainer=binary metrics=default
+```
 
-## 🎛️ 配置体系（参数管理升级点）
+## 让 AI 复现论文
 
-- `configs/config.yaml` 使用 Hydra `defaults` 声明组合：
-  ```yaml
-  defaults:
-    - model: transformer
-    - training_loop: default
-    - trainer: base
-    - _self_
-  ```
-- 模型组内只需关注自身超参（输入维度由 `main.py` 在运行时根据 `Feature_selected.py` 自动计算，不再写死）。
-- 训练循环配置专注在 `batch_size / train_ratio / random_state / optimizer 超参`，与模型解耦。
-- `best_model_path`、`log_path` 等公共路径统一放在主配置，方便所有组合共享。
-- 通过 `OmegaConf` + `hydra.utils.instantiate`，新增模型/训练策略只需添加 YAML 文件并在 `defaults` 中引用，无需修改 Python 代码。
+把论文放进：
 
-## 🧰 训练流程速览
+```text
+docs/papers/
+```
 
-1. `Data_pre.py`：解析配置路径 → 读取 CSV → split → 标准化/编码 → 构建 `BaseDataset`。
-2. `models/rnn_models.py`：基于配置动态实例化 RNN/GRU/LSTM/Transformer，自动匹配分类/多分类/回归输出。
-3. `engine.BaseTrainer`：
-   - 统一的 `train/train_from_epoch`，支持断点恢复。
-   - 自动调度损失函数、指标与 AUC/AUPRC/F1/MCC 等评估。
-   - `ReduceLROnPlateau` + `EarlyStopping` 双保险。
-   - 日志 & 指标 CSV 落地，方便可视化或追溯。
+生成论文方法模板：
 
-## � 扩展指引
+```bash
+python scripts/paper_methods/scaffold.py paper_xxx \
+  --paper docs/papers/paper_xxx.pdf \
+  --dataset my_task \
+  --trainer binary
+```
 
-- **新增模型**：在 `models/` 下实现 → `configs/model/xxx.yaml` 中声明 `_target_` + 超参 → 在命令行 `model=xxx` 即可使用。
-- **新增训练策略**：在 `configs/training_loop/` 添加 YAML（如不同的 learning rate、patience、task_type），默认 `main.py` 会读取并自动适配。
-- **新增数据流程**：
-  - 常规结构直接在 `Data_pre.py` 扩展函数或新增模块。
-  - 复杂场景可以通过即将上线的「数据流程配置组」将 time-series / tabular / 多标签 等策略标准化（见下方路线图）。
+AI 实现时应遵守：
 
-## 🧭 路线图（即将上线）
+- `AGENTS.md`
+- `docs/ai_reproduction_guide.md`
+- `.claude/skills/reproflow-reproduce-paper/SKILL.md`
+- `paper_methods/template/`
 
-- [x] Hydra 组合式参数管理、日志持久化
-- [x] RNN/GRU/LSTM/Transformer 模型族
-- [x] 传统机器学习 Benchmark 模块（30+ 模型）
-- [ ] 各种图神经网络的模型 GCN，GAT，GraphSAGE 等
-- [ ] 推荐系统模型库：Wide&Deep、DeepFM、TabNet、Temporal Fusion Transformer 等
-- [ ] 超参搜索（Hydra Sweeper + Optuna）
+模型 forward contract 固定为：
 
-欢迎在 Issue 中提交你希望优先支持的模型与流程 🙌
+```python
+def forward(self, batch):
+    return {"logits": logits}
+```
 
-## 🤝 贡献指南
+## 传统 ML Baseline
 
-1. Fork 仓库并创建分支：`git checkout -b feature/awesome`
-2. 根据需要新增配置文件或 Python 模块
-3. 运行 `python main.py` 确认无误
-4. 提交 PR，并说明修改的配置组合/训练场景
+在同一个数据配置上跑传统机器学习 baseline：
 
-## 📮 联系方式
+```bash
+python run_ml_benchmark.py data=sample_binary
+python run_ml_benchmark.py data=sample_regression
+```
 
-- Email: 2812156857@qq.com
-- Issues: 欢迎在 GitHub Repo 中沟通
+## 调参
 
-如果该模板对你有帮助，欢迎 star ⭐ 支持我们继续完善更多模型与数据流程！
+调参配置位于 `configs/tuning/`：
 
-**最后更新时间**：2025-01-10
+```bash
+python scripts/tuning/run_grid_search.py configs/tuning/transformer_binary_grid.yaml --dry-run
+python scripts/tuning/run_grid_search.py configs/tuning/transformer_binary_grid.yaml --max-runs 1
+```
+
+示例：
+
+```yaml
+seeds: [42, 43, 44]
+grid:
+  model.hidden_dim: [32, 64]
+  training_loop.learning_rate: [0.001, 0.0005]
+```
+
+## 消融实验
+
+消融配置位于 `configs/ablation/`：
+
+```bash
+python scripts/ablation/run_ablation.py configs/ablation/transformer_binary_ablation.yaml --dry-run
+```
+
+示例：
+
+```yaml
+variants:
+  - name: full
+    overrides: {}
+  - name: small_hidden
+    overrides:
+      model.hidden_dim: 32
+seeds: [42, 43, 44]
+```
+
+## 公平对比实验
+
+推荐用 `configs/experiment/*.yaml` 管理完整对比：
+
+```bash
+python scripts/experiment/run_experiment.py configs/experiment/binary_smoke.yaml --dry-run
+python scripts/experiment/run_experiment.py configs/experiment/binary_smoke.yaml --max-runs 1
+```
+
+它可以把深度学习方法和传统 ML baseline 放在同一组实验里，并统一 dataset、metric、seed 和输出目录。
+
+## AI Skills
+
+项目内置了给 AI agent 使用的工作流：
+
+```text
+.claude/skills/
+├── reproflow-onboard-dataset
+├── reproflow-reproduce-paper
+├── reproflow-add-model
+├── reproflow-add-metric
+├── reproflow-run-fair-experiment
+└── reproflow-debug-run
+```
+
+这些 skills 会引导 AI 按项目 contract 增量接入数据、模型、指标、消融和实验。
+
+## 验证命令
+
+```bash
+python -m py_compile main.py Data_pre.py Dataset.py engine.py run_ml_benchmark.py
+python scripts/doctor.py data=sample_binary model=transformer trainer=binary metrics=default training_loop.epochs=1
+python main.py data=sample_binary model=transformer trainer=binary metrics=default training_loop.epochs=1
+```
+
+## 交流与贡献
+
+欢迎提交 Issue、提出建议，或者补充新的模型、数据适配、指标、论文方法模板和实验配置。
+
+如果你在使用过程中遇到问题，也可以通过邮箱联系我：
+
+```text
+2812156857@qq.com
+```
